@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from "recharts"; // IMPORT RECHARTS
+} from "recharts";
 
 interface DashboardHomeProps {
   fullName: string;
@@ -24,7 +24,6 @@ export default function DashboardHome({
 }: DashboardHomeProps) {
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
-
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [expenseName, setExpenseName] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
@@ -35,13 +34,12 @@ export default function DashboardHome({
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Kita tarik 30 transaksi terakhir buat bahan grafik
+    // Tarik data lebih banyak untuk laporan akuntansi
     const { data } = await supabase
       .from("fyntra_transactions")
       .select("*")
       .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(30);
+      .order("created_at", { ascending: false });
 
     if (data) setTransactions(data);
   };
@@ -50,23 +48,38 @@ export default function DashboardHome({
     fetchTransactions();
   }, [balance]);
 
-  // --- LOGIKA MENGOLAH DATA UNTUK GRAFIK ---
-  const chartData = useMemo(() => {
-    // Kita rangkum total Pemasukan vs Pengeluaran dari data transaksi
-    let totalIncome = 0;
-    let totalExpense = 0;
+  // --- LOGIKA ACCOUNTANT: RINGKASAN BULAN INI ---
+  const monthlyStats = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let incomeThisMonth = 0;
+    let expenseThisMonth = 0;
 
     transactions.forEach((t) => {
-      if (t.type === "income") totalIncome += Number(t.amount);
-      if (t.type === "expense") totalExpense += Number(t.amount);
+      const tDate = new Date(t.created_at);
+      if (
+        tDate.getMonth() === currentMonth &&
+        tDate.getFullYear() === currentYear
+      ) {
+        if (t.type === "income") incomeThisMonth += Number(t.amount);
+        if (t.type === "expense") expenseThisMonth += Number(t.amount);
+      }
     });
 
-    return [
-      { name: "Pemasukan", total: totalIncome, color: "#10b981" }, // Emerald
-      { name: "Pengeluaran", total: totalExpense, color: "#f43f5e" }, // Rose
-    ];
+    return {
+      income: incomeThisMonth,
+      expense: expenseThisMonth,
+      net: incomeThisMonth - expenseThisMonth,
+    };
   }, [transactions]);
-  // -----------------------------------------
+
+  // Data untuk Grafik
+  const chartData = [
+    { name: "Masuk", total: monthlyStats.income, color: "#10b981" },
+    { name: "Keluar", total: monthlyStats.expense, color: "#f43f5e" },
+  ];
 
   const handleTopUp = async () => {
     setLoading(true);
@@ -77,19 +90,19 @@ export default function DashboardHome({
       setLoading(false);
       return;
     }
-
     const nominal = 50000;
     await supabase
       .from("fyntra_wallets")
       .update({ balance: balance + nominal })
       .eq("user_id", user.id);
-    await supabase.from("fyntra_transactions").insert({
-      user_id: user.id,
-      amount: nominal,
-      type: "income",
-      description: "Top Up Saldo",
-    });
-
+    await supabase
+      .from("fyntra_transactions")
+      .insert({
+        user_id: user.id,
+        amount: nominal,
+        type: "income",
+        description: "Top Up Saldo",
+      });
     onUpdate();
     setLoading(false);
   };
@@ -104,25 +117,24 @@ export default function DashboardHome({
       setLoading(false);
       return;
     }
-
     const nominal = parseInt(expenseAmount);
     if (balance < nominal) {
-      alert("Saldo nggak cukup, Bos! Kerja lagi yuk!");
+      alert("Saldo nggak cukup, Bos!");
       setLoading(false);
       return;
     }
-
     await supabase
       .from("fyntra_wallets")
       .update({ balance: balance - nominal })
       .eq("user_id", user.id);
-    await supabase.from("fyntra_transactions").insert({
-      user_id: user.id,
-      amount: nominal,
-      type: "expense",
-      description: expenseName,
-    });
-
+    await supabase
+      .from("fyntra_transactions")
+      .insert({
+        user_id: user.id,
+        amount: nominal,
+        type: "expense",
+        description: expenseName,
+      });
     setExpenseName("");
     setExpenseAmount("");
     setShowExpenseModal(false);
@@ -132,100 +144,122 @@ export default function DashboardHome({
 
   return (
     <div className="animate-in fade-in duration-700">
-      {/* CARD SALDO UTAMA */}
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-800 p-12 rounded-[3.5rem] text-white shadow-2xl shadow-blue-200 mb-10 relative overflow-hidden">
+      {/* HEADER & SALDO UTAMA */}
+      <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white shadow-2xl mb-10 relative overflow-hidden border border-slate-800">
         <div className="relative z-10">
-          <p className="text-blue-200 text-[10px] font-black uppercase tracking-[0.5em] mb-4 opacity-80">
-            Saldo Aktif @Faizax
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
+            Account Balance
           </p>
           <h2 className="text-6xl font-black italic tracking-tighter mb-10">
             Rp {balance.toLocaleString("id-ID")}
           </h2>
-
           <div className="flex gap-4">
             <button
               onClick={handleTopUp}
               disabled={loading}
-              className="px-6 py-4 bg-white text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95 shadow-xl disabled:opacity-50"
+              className="px-6 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95"
             >
-              {loading ? "SYNC..." : "+ Top Up 50k"}
+              + Top Up 50k
             </button>
             <button
               onClick={() => setShowExpenseModal(true)}
-              disabled={loading}
-              className="px-6 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95 shadow-xl shadow-rose-200 disabled:opacity-50"
+              className="px-6 py-4 bg-white/10 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/20 transition-all active:scale-95 backdrop-blur-md"
             >
-              - Catat Keluar
+              - Expense
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 mb-10">
-        {/* CHART VISUALISASI DATA */}
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col justify-center">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 italic">
-            Analitik Arus Kas
-          </h3>
+      {/* ACCOUNTANT STATS CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group hover:border-emerald-200 transition-all">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+            Income This Month
+          </p>
+          <p className="text-2xl font-black text-emerald-500 tracking-tight">
+            + Rp {monthlyStats.income.toLocaleString("id-ID")}
+          </p>
+        </div>
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group hover:border-rose-200 transition-all">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+            Expense This Month
+          </p>
+          <p className="text-2xl font-black text-rose-500 tracking-tight">
+            - Rp {monthlyStats.expense.toLocaleString("id-ID")}
+          </p>
+        </div>
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm group hover:border-blue-200 transition-all">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+            Net Cashflow
+          </p>
+          <p
+            className={`text-2xl font-black tracking-tight ${monthlyStats.net >= 0 ? "text-blue-600" : "text-orange-500"}`}
+          >
+            {monthlyStats.net >= 0 ? "+" : ""} Rp{" "}
+            {monthlyStats.net.toLocaleString("id-ID")}
+          </p>
+        </div>
+      </div>
 
-          {transactions.length > 0 ? (
-            <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
-                >
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 10, fontWeight: "bold", fill: "#94a3b8" }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(value) => `Rp${value / 1000}k`}
-                    tick={{ fontSize: 10, fill: "#cbd5e1" }}
-                  />
-                  <Tooltip
-                    cursor={{ fill: "#f8fafc" }}
-                    formatter={(value: any) => [
-                      `Rp ${value.toLocaleString("id-ID")}`,
-                      "Total",
-                    ]}
-                    contentStyle={{
-                      borderRadius: "1rem",
-                      border: "none",
-                      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                      fontWeight: "bold",
-                      fontSize: "12px",
-                    }}
-                  />
-                  <Bar dataKey="total" radius={[8, 8, 8, 8]} barSize={40}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-48 flex items-center justify-center text-slate-300 font-bold text-xs italic">
-              Belum ada data analitik.
-            </div>
-          )}
+      <div className="grid md:grid-cols-2 gap-8 mb-10">
+        {/* CHART SECTION */}
+        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 italic">
+            Visual Analytics
+          </h3>
+          <div className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+              >
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fontWeight: "bold", fill: "#94a3b8" }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `Rp${v / 1000}k`}
+                  tick={{ fontSize: 10, fill: "#cbd5e1" }}
+                />
+                <Tooltip
+                  cursor={{ fill: "#f8fafc" }}
+                  formatter={(value: any) => [
+                    `Rp ${Number(value).toLocaleString("id-ID")}`,
+                    "Total",
+                  ]}
+                  contentStyle={{
+                    borderRadius: "1rem",
+                    border: "none",
+                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar dataKey="total" radius={[8, 8, 8, 8]} barSize={40}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* DAFTAR RIWAYAT (Dipersempit & pakai scroll) */}
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col">
+        {/* RECENT HISTORY */}
+        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm">
           <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8 italic">
-            Sejarah Terakhir
+            Recent Activity
           </h3>
-          <div className="space-y-4 overflow-y-auto max-h-48 pr-2 custom-scrollbar">
+          <div className="space-y-4 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
             {transactions.slice(0, 5).map((t) => (
               <div
                 key={t.id}
-                className="flex justify-between items-center p-4 bg-slate-50/50 rounded-2xl border border-slate-50 hover:border-blue-100 transition-all"
+                className="flex justify-between items-center p-4 bg-slate-50/50 rounded-2xl border border-slate-50 group hover:border-blue-100 transition-all"
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -234,7 +268,7 @@ export default function DashboardHome({
                     {t.type === "income" ? "💰" : "💸"}
                   </div>
                   <div>
-                    <p className="font-bold text-xs text-slate-800 truncate max-w-[100px]">
+                    <p className="font-bold text-xs text-slate-800">
                       {t.description}
                     </p>
                     <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">
@@ -248,71 +282,59 @@ export default function DashboardHome({
                 <p
                   className={`font-black text-xs ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
                 >
-                  {t.type === "income" ? "+" : "-"} {t.amount / 1000}k
+                  {t.type === "income" ? "+" : "-"} Rp
+                  {t.amount.toLocaleString("id-ID")}
                 </p>
               </div>
             ))}
-            {transactions.length === 0 && (
-              <p className="text-center text-slate-400 font-bold text-xs py-4">
-                Kosong.
-              </p>
-            )}
           </div>
         </div>
       </div>
 
-      {/* MODAL PENGELUARAN */}
+      {/* EXPENSE MODAL */}
       {showExpenseModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300">
-            <h3 className="text-2xl font-black italic mb-2">
-              Catat Pengeluaran
-            </h3>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8">
-              Uang keluar, hati tetap tenang.
-            </p>
-
+            <h3 className="text-2xl font-black italic mb-2">New Expense</h3>
             <form onSubmit={handleAddExpense} className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
-                  Kebutuhan
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  Description
                 </label>
                 <input
                   required
                   type="text"
-                  placeholder="Misal: Beli Kopi Boba"
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-900"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-900"
                   value={expenseName}
                   onChange={(e) => setExpenseName(e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
-                  Nominal (Rp)
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                  Amount (Rp)
                 </label>
                 <input
                   required
                   type="number"
-                  placeholder="Contoh: 25000"
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-900"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-900"
                   value={expenseAmount}
                   onChange={(e) => setExpenseAmount(e.target.value)}
                 />
               </div>
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4">
                 <button
                   type="button"
                   onClick={() => setShowExpenseModal(false)}
-                  className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition"
+                  className="flex-1 py-4 font-black text-[10px] uppercase tracking-widest text-slate-400"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-100 hover:bg-rose-600 transition disabled:opacity-50"
+                  className="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-100 hover:bg-rose-600 transition"
                 >
-                  {loading ? "SIMPAN..." : "SIMPAN"}
+                  Save
                 </button>
               </div>
             </form>
