@@ -14,6 +14,12 @@ const MENU_ITEMS = [
   },
   { id: "goals", label: "Future Goals", icon: "🎯", path: "/dashboard/goals" },
   {
+    id: "wallets",
+    label: "Manage Wallets",
+    icon: "💼",
+    path: "/dashboard/wallets",
+  },
+  {
     id: "settings",
     label: "Settings",
     icon: "⚙️",
