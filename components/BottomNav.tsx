@@ -17,8 +17,13 @@ const MENU_ITEMS = [
     icon: "📊",
     path: "/dashboard/analytics",
   },
+  {
+    id: "subscriptions",
+    label: "Auto",
+    icon: "🔄",
+    path: "/dashboard/subscriptions",
+  }, // <-- TAMBAHKAN INI
   { id: "wallets", label: "Wallet", icon: "💼", path: "/dashboard/wallets" },
-  { id: "settings", label: "Set", icon: "⚙️", path: "/dashboard/settings" },
 ];
 
 export default function BottomNav() {

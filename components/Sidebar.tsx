@@ -18,6 +18,12 @@ const MENU_ITEMS = [
     icon: "📊",
     path: "/dashboard/analytics",
   },
+  {
+    id: "subscriptions",
+    label: "Automations",
+    icon: "🔄",
+    path: "/dashboard/subscriptions",
+  }, // <-- TAMBAHKAN INI
   { id: "goals", label: "Future Goals", icon: "🎯", path: "/dashboard/goals" },
   {
     id: "wallets",
