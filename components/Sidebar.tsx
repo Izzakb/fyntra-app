@@ -12,6 +12,12 @@ const MENU_ITEMS = [
     icon: "📑",
     path: "/dashboard/transactions",
   },
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: "📊",
+    path: "/dashboard/analytics",
+  },
   { id: "goals", label: "Future Goals", icon: "🎯", path: "/dashboard/goals" },
   {
     id: "wallets",
