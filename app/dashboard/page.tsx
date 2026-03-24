@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import AiAdvisor from "@/components/AiAdvisor"; // <-- IMPORT KARTU AI
+import AiAdvisor from "@/components/AiAdvisor";
 
 const CATEGORIES = [
   { name: "Makanan", icon: "🍔" },
@@ -31,7 +31,7 @@ export default function DashboardHomePage() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
 
-  // State Modal Transaksi
+  // --- STATE FORM TRANSAKSI ---
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -41,25 +41,109 @@ export default function DashboardHomePage() {
   const [selectedCategory, setSelectedCategory] = useState("Makanan");
   const [selectedWalletId, setSelectedWalletId] = useState("");
 
+  // --- STATE MAGIC AI ---
+  const [magicText, setMagicText] = useState("");
+  const [isMagicLoading, setIsMagicLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+
+  // FUNGSI 1: MAGIC PROCESS (AI)
+  const handleMagicProcess = async (textToProcess: string = magicText) => {
+    if (!textToProcess) return toast.error("Ketik sesuatu dulu Bos!");
+    setIsMagicLoading(true);
+    try {
+      const res = await fetch("/api/magic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: textToProcess }),
+      });
+      const data = await res.json();
+      applyMagicData(data);
+    } catch (e) {
+      toast.error("Gagal konek ke otak AI.");
+    }
+    setIsMagicLoading(false);
+  };
+
+  // FUNGSI 2: SCAN STRUK
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsMagicLoading(true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      try {
+        const res = await fetch("/api/magic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: reader.result }),
+        });
+        const data = await res.json();
+        applyMagicData(data);
+      } catch (e) {
+        toast.error("Gagal baca struk.");
+      }
+      setIsMagicLoading(false);
+    };
+  };
+
+  // FUNGSI 3: MIC INPUT
+  const startListening = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return toast.error("Browser ga support mic.");
+    const recognition = new SpeechRecognition();
+    recognition.lang = "id-ID";
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setMagicText(transcript);
+      handleMagicProcess(transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+  };
+
+  // FUNGSI 4: APPLY AI DATA
+  const applyMagicData = (data: any) => {
+    if (data.error) return toast.error(data.error);
+    console.log("HASIL AI:", data);
+    if (data.amount) setTransactionAmount(data.amount.toString());
+    if (data.description) setTransactionName(data.description);
+    if (data.type) setTransactionType(data.type);
+    if (data.type === "expense" && data.category) {
+      setSelectedCategory(data.category);
+    } else if (data.type === "income") {
+      setSelectedCategory("Income");
+    }
+    if (data.wallet_hint && wallets.length > 0) {
+      const matched = wallets.find((w) =>
+        w.wallet_name.toLowerCase().includes(data.wallet_hint.toLowerCase()),
+      );
+      if (matched) setSelectedWalletId(matched.id);
+    }
+    toast.success("✨ AI Berhasil Mengisi Form!");
+    setMagicText("");
+  };
+
+  // FETCH DATA
   const fetchData = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-
     const { data: trans } = await supabase
       .from("fyntra_transactions")
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true)
       .order("created_at", { ascending: false });
-
     const { data: targetGoals } = await supabase
       .from("fyntra_goals")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-
     if (trans) setTransactions(trans);
     if (targetGoals) setGoals(targetGoals);
   };
@@ -67,14 +151,6 @@ export default function DashboardHomePage() {
   useEffect(() => {
     fetchData();
   }, [balance]);
-
-  const openModal = () => {
-    if (wallets.length > 0) {
-      const defaultWallet = wallets.find((w) => w.is_default) || wallets[0];
-      setSelectedWalletId(defaultWallet.id);
-    }
-    setShowTransactionModal(true);
-  };
 
   const monthlyStats = useMemo(() => {
     const now = new Date();
@@ -94,22 +170,18 @@ export default function DashboardHomePage() {
     return { income, expense, net: income - expense };
   }, [transactions]);
 
-  // LOGIKA AI: Cari kategori paling boros bulan ini
   const topExpenseCategory = useMemo(() => {
     const now = new Date();
     const expenses = transactions.filter(
       (t) =>
         t.type === "expense" &&
-        new Date(t.created_at).getMonth() === now.getMonth() &&
-        new Date(t.created_at).getFullYear() === now.getFullYear(),
+        new Date(t.created_at).getMonth() === now.getMonth(),
     );
     if (expenses.length === 0) return "Belum ada";
-
     const grouped = expenses.reduce((acc: any, curr: any) => {
       acc[curr.category] = (acc[curr.category] || 0) + Number(curr.amount);
       return acc;
     }, {});
-
     return Object.keys(grouped).reduce((a, b) =>
       grouped[a] > grouped[b] ? a : b,
     );
@@ -117,39 +189,20 @@ export default function DashboardHomePage() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedWalletId) {
-      toast.error("Pilih Dompet", {
-        description: "Anda harus memilih sumber dana.",
-      });
-      return;
-    }
-
     setLoading(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
     const { error } = await supabase.rpc("process_fyntra_transaction", {
-      p_user_id: user.id,
+      p_user_id: user?.id,
       p_wallet_id: selectedWalletId,
       p_amount: parseInt(transactionAmount),
       p_type: transactionType,
       p_category: transactionType === "income" ? "Income" : selectedCategory,
       p_description: transactionName,
     });
-
-    if (error) {
-      toast.error("Transaksi Gagal", { description: error.message });
-    } else {
-      toast.success("Transaksi Berhasil Dicatat!", {
-        description: `${transactionType === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${Number(transactionAmount).toLocaleString("id-ID")} telah ditambahkan.`,
-      });
-      setTransactionName("");
-      setTransactionAmount("");
+    if (!error) {
+      toast.success("Tersimpan!");
       setShowTransactionModal(false);
       refreshGlobalData();
       fetchData();
@@ -157,80 +210,53 @@ export default function DashboardHomePage() {
     setLoading(false);
   };
 
-  if (loadingGlobal) {
+  if (loadingGlobal)
     return (
-      <div className="animate-pulse p-10 font-black italic text-slate-300">
+      <div className="p-10 font-black italic text-slate-300">
         Syncing Ledger...
       </div>
     );
-  }
 
   return (
     <div className="animate-in fade-in duration-700 space-y-10 pb-20">
-      {/* MASTER BALANCE CARD */}
-      <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white shadow-2xl border border-slate-800 relative overflow-hidden">
+      {/* HEADER / BALANCE */}
+      <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
-              Total Kekayaan (Master)
+              Master Balance
             </p>
             <h2 className="text-5xl md:text-6xl font-black italic tracking-tighter">
               Rp {balance.toLocaleString("id-ID")}
             </h2>
           </div>
           <button
-            onClick={openModal}
-            className="px-10 py-5 bg-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap"
+            onClick={() => setShowTransactionModal(true)}
+            className="px-10 py-5 bg-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap"
           >
             + Add Transaction
           </button>
         </div>
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
       </div>
 
-      {/* DAFTAR DOMPET */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center px-2">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">
-            Dompet Aktif
-          </h3>
-          <Link
-            href="/dashboard/wallets"
-            className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-700"
+      {/* DOMPET LIST */}
+      <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+        {wallets.map((w) => (
+          <div
+            key={w.id}
+            className="min-w-[220px] bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm"
           >
-            Manage →
-          </Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-          {wallets.map((w) => (
-            <div
-              key={w.id}
-              className="min-w-[220px] bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between gap-6 hover:border-blue-100 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-xl shadow-sm border border-slate-100">
-                  {w.icon}
-                </div>
-                <div>
-                  <p className="font-black text-xs uppercase italic text-slate-800">
-                    {w.wallet_name}
-                  </p>
-                  {w.is_default && (
-                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
-                      Main Wallet
-                    </p>
-                  )}
-                </div>
-              </div>
-              <p className="font-black text-xl text-blue-600 italic tracking-tighter">
-                Rp {w.balance.toLocaleString("id-ID")}
-              </p>
-            </div>
-          ))}
-        </div>
+            <p className="font-black text-xs uppercase italic text-slate-800 mb-4">
+              {w.icon} {w.wallet_name}
+            </p>
+            <p className="font-black text-xl text-blue-600 italic tracking-tighter">
+              Rp {w.balance.toLocaleString("id-ID")}
+            </p>
+          </div>
+        ))}
       </div>
 
-      {/* --- KARTU AI ADVISOR GEMINI --- */}
+      {/* AI ADVISOR */}
       <AiAdvisor
         income={monthlyStats.income}
         expense={monthlyStats.expense}
@@ -242,7 +268,7 @@ export default function DashboardHomePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
-            Income (This Month)
+            Income (Month)
           </p>
           <p className="text-2xl font-black text-emerald-500">
             +Rp {monthlyStats.income.toLocaleString("id-ID")}
@@ -250,7 +276,7 @@ export default function DashboardHomePage() {
         </div>
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
-            Expense (This Month)
+            Expense (Month)
           </p>
           <p className="text-2xl font-black text-rose-500">
             -Rp {monthlyStats.expense.toLocaleString("id-ID")}
@@ -268,18 +294,18 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* GOALS & CHART */}
+      {/* --- INI DIA YANG ILANG: GOALS & CHART --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col justify-between">
+        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">
               Future Goals
             </h3>
             <Link
               href="/dashboard/goals"
-              className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-700 transition-colors"
+              className="text-[9px] font-black text-blue-500 uppercase tracking-widest"
             >
-              View Detail →
+              Detail →
             </Link>
           </div>
           <div className="space-y-6 overflow-y-auto pr-2 custom-scrollbar">
@@ -316,7 +342,7 @@ export default function DashboardHomePage() {
           </div>
         </div>
 
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col justify-center items-center">
+        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col">
           <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6 italic text-center w-full">
             Cashflow Chart
           </h3>
@@ -351,42 +377,27 @@ export default function DashboardHomePage() {
 
       {/* RECENT ACTIVITY */}
       <div className="bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-sm">
-        <div className="flex justify-between items-center mb-8">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">
-            Recent Activity
-          </h3>
-          <Link
-            href="/dashboard/transactions"
-            className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-700 transition-colors"
-          >
-            View Detail →
-          </Link>
-        </div>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic mb-8">
+          Recent Activity
+        </h3>
         <div className="space-y-4">
           {transactions.slice(0, 5).map((t) => (
             <div
               key={t.id}
-              className="flex justify-between items-center p-5 bg-slate-50/50 rounded-[2rem] border border-slate-50 group hover:border-blue-100 transition-all"
+              className="flex justify-between items-center p-5 bg-slate-50/50 rounded-[2rem] border border-slate-50"
             >
               <div className="flex items-center gap-5">
                 <div
                   className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg ${t.type === "income" ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"}`}
                 >
-                  {t.type === "income"
-                    ? "💰"
-                    : CATEGORIES.find((c) => c.name === t.category)?.icon ||
-                      "💸"}
+                  {t.type === "income" ? "💰" : "💸"}
                 </div>
                 <div>
                   <p className="font-black text-sm text-slate-800">
                     {t.description}
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-                    {t.category} •{" "}
-                    {new Date(t.created_at).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                    })}
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">
+                    {t.category}
                   </p>
                 </div>
               </div>
@@ -403,57 +414,95 @@ export default function DashboardHomePage() {
 
       {/* MODAL TRANSAKSI */}
       {showTransactionModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <h3 className="text-2xl font-black italic mb-6">Add Transaction</h3>
+            <div className="mb-8 p-1 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-lg">
+              <div className="bg-white rounded-[1.4rem] p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-purple-600">
+                    ✨ AI Magic Input
+                  </span>
+                  <div className="flex gap-2">
+                    <label className="cursor-pointer bg-slate-100 p-2 rounded-xl text-sm">
+                      📸{" "}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={startListening}
+                      className={`p-2 rounded-xl text-sm ${isListening ? "bg-rose-100 text-rose-500 animate-pulse" : "bg-slate-100"}`}
+                    >
+                      {isListening ? "🎙️" : "🎤"}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Contoh: Kopi 15rb"
+                    className="flex-1 bg-slate-50 border border-slate-100 px-4 py-3 rounded-2xl text-xs font-bold outline-none"
+                    value={magicText}
+                    onChange={(e) => setMagicText(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      (e.preventDefault(), handleMagicProcess())
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleMagicProcess()}
+                    disabled={isMagicLoading}
+                    className="bg-slate-900 text-white px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {isMagicLoading ? "..." : "Gas"}
+                  </button>
+                </div>
+              </div>
+            </div>
             <form onSubmit={handleSubmitTransaction} className="space-y-5">
               <div className="flex p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setTransactionType("expense")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${transactionType === "expense" ? "bg-white text-rose-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "expense" ? "bg-white text-rose-500 shadow-sm" : "text-slate-400"}`}
                 >
-                  Pengeluaran
+                  Expense
                 </button>
                 <button
                   type="button"
                   onClick={() => setTransactionType("income")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${transactionType === "income" ? "bg-white text-emerald-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "income" ? "bg-white text-emerald-500 shadow-sm" : "text-slate-400"}`}
                 >
-                  Pemasukan
+                  Income
                 </button>
               </div>
-
               <div>
                 <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
                   Sumber Dana
                 </label>
                 <select
                   required
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 appearance-none cursor-pointer focus:ring-2 focus:ring-blue-600/20 outline-none"
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
                 >
-                  <option value="" disabled>
-                    Pilih Dompet...
-                  </option>
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
-                      {w.icon} {w.wallet_name} (Sisa: Rp{" "}
-                      {w.balance.toLocaleString("id-ID")})
+                      {w.wallet_name}
                     </option>
                   ))}
                 </select>
               </div>
-
               <input
                 required
                 type="text"
-                placeholder={
-                  transactionType === "income"
-                    ? "Sumber Dana (Misal: Gaji)"
-                    : "Deskripsi Pengeluaran"
-                }
+                placeholder="Deskripsi"
                 className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
                 value={transactionName}
                 onChange={(e) => setTransactionName(e.target.value)}
@@ -466,9 +515,8 @@ export default function DashboardHomePage() {
                 value={transactionAmount}
                 onChange={(e) => setTransactionAmount(e.target.value)}
               />
-
               {transactionType === "expense" && (
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className="grid grid-cols-3 gap-2">
                   {CATEGORIES.filter((c) => c.name !== "Income").map((c) => (
                     <button
                       key={c.name}
@@ -483,21 +531,20 @@ export default function DashboardHomePage() {
                   ))}
                 </div>
               )}
-
               <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400 hover:text-slate-600 transition-colors"
+                  className="flex-1 font-black text-[10px] uppercase text-slate-400"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex-1 py-4 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${transactionType === "income" ? "bg-emerald-500" : "bg-blue-600"} disabled:opacity-50`}
+                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest"
                 >
-                  {loading ? "Menyimpan..." : "Save Record"}
+                  {loading ? "Saving..." : "Save Record"}
                 </button>
               </div>
             </form>
