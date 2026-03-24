@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useFyntra } from "@/context/FyntraContext";
-import { toast } from "sonner"; // <-- IMPORT SONNER
+import { toast } from "sonner";
 import {
   BarChart,
   Bar,
@@ -24,12 +24,14 @@ const CATEGORIES = [
 ];
 
 export default function DashboardHomePage() {
-  const { balance, refreshGlobalData, loadingGlobal } = useFyntra();
+  // 1. PANGGIL WALLETS DARI CONTEXT
+  const { balance, wallets, refreshGlobalData, loadingGlobal } = useFyntra();
 
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
 
+  // State Modal Transaksi
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -37,6 +39,9 @@ export default function DashboardHomePage() {
   const [transactionName, setTransactionName] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Makanan");
+
+  // 2. STATE UNTUK PILIH DOMPET
+  const [selectedWalletId, setSelectedWalletId] = useState("");
 
   const fetchData = async () => {
     const {
@@ -65,6 +70,16 @@ export default function DashboardHomePage() {
     fetchData();
   }, [balance]);
 
+  // Set default dompet saat modal dibuka
+  const openModal = () => {
+    if (wallets.length > 0) {
+      // Cari dompet default, kalau tidak ada, pakai dompet pertama
+      const defaultWallet = wallets.find((w) => w.is_default) || wallets[0];
+      setSelectedWalletId(defaultWallet.id);
+    }
+    setShowTransactionModal(true);
+  };
+
   const monthlyStats = useMemo(() => {
     const now = new Date();
     let income = 0;
@@ -85,6 +100,13 @@ export default function DashboardHomePage() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedWalletId) {
+      toast.error("Pilih Dompet", {
+        description: "Anda harus memilih sumber dana.",
+      });
+      return;
+    }
+
     setLoading(true);
     const {
       data: { user },
@@ -94,8 +116,10 @@ export default function DashboardHomePage() {
       return;
     }
 
+    // 3. KIRIM p_wallet_id KE SUPABASE
     const { error } = await supabase.rpc("process_fyntra_transaction", {
       p_user_id: user.id,
+      p_wallet_id: selectedWalletId, // <-- INI YANG BARU
       p_amount: parseInt(transactionAmount),
       p_type: transactionType,
       p_category: transactionType === "income" ? "Income" : selectedCategory,
@@ -103,10 +127,8 @@ export default function DashboardHomePage() {
     });
 
     if (error) {
-      // TOAST ERROR
       toast.error("Transaksi Gagal", { description: error.message });
     } else {
-      // TOAST SUCCESS
       toast.success("Transaksi Berhasil Dicatat!", {
         description: `${transactionType === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${Number(transactionAmount).toLocaleString("id-ID")} telah ditambahkan.`,
       });
@@ -131,21 +153,63 @@ export default function DashboardHomePage() {
     <div className="animate-in fade-in duration-700 space-y-10 pb-20">
       {/* MASTER BALANCE CARD */}
       <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white shadow-2xl border border-slate-800 relative overflow-hidden">
-        <div className="relative z-10">
-          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
-            Master Balance
-          </p>
-          <h2 className="text-6xl font-black italic tracking-tighter mb-10">
-            Rp {balance.toLocaleString("id-ID")}
-          </h2>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
+              Total Kekayaan (Master)
+            </p>
+            <h2 className="text-5xl md:text-6xl font-black italic tracking-tighter">
+              Rp {balance.toLocaleString("id-ID")}
+            </h2>
+          </div>
           <button
-            onClick={() => setShowTransactionModal(true)}
-            className="px-10 py-4 bg-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
+            onClick={openModal}
+            className="px-10 py-5 bg-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 whitespace-nowrap"
           >
             + Add Transaction
           </button>
         </div>
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* 4. DAFTAR DOMPET (SCROLL HORIZONTAL) */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center px-2">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">
+            Dompet Aktif
+          </h3>
+          {/* Nanti ini bisa diarahkan ke halaman Manage Wallets */}
+          <button className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-700">
+            Manage →
+          </button>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+          {wallets.map((w) => (
+            <div
+              key={w.id}
+              className="min-w-[220px] bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-between gap-6 hover:border-blue-100 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-xl shadow-sm border border-slate-100">
+                  {w.icon}
+                </div>
+                <div>
+                  <p className="font-black text-xs uppercase italic text-slate-800">
+                    {w.wallet_name}
+                  </p>
+                  {w.is_default && (
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                      Main Wallet
+                    </p>
+                  )}
+                </div>
+              </div>
+              <p className="font-black text-xl text-blue-600 italic tracking-tighter">
+                Rp {w.balance.toLocaleString("id-ID")}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* SUMMARY CARDS */}
@@ -311,12 +375,12 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* MODAL TRANSAKSI */}
+      {/* MODAL TRANSAKSI (DENGAN DROPDOWN DOMPET) */}
       {showTransactionModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300">
             <h3 className="text-2xl font-black italic mb-6">Add Transaction</h3>
-            <form onSubmit={handleSubmitTransaction} className="space-y-6">
+            <form onSubmit={handleSubmitTransaction} className="space-y-5">
               <div className="flex p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
@@ -333,11 +397,37 @@ export default function DashboardHomePage() {
                   Pemasukan
                 </button>
               </div>
+
+              {/* 5. DROPDOWN PILIH DOMPET */}
+              <div>
+                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
+                  Sumber Dana
+                </label>
+                <select
+                  required
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 appearance-none cursor-pointer focus:ring-2 focus:ring-blue-600/20 outline-none"
+                  value={selectedWalletId}
+                  onChange={(e) => setSelectedWalletId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Pilih Dompet...
+                  </option>
+                  {wallets.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.icon} {w.wallet_name} (Sisa: Rp{" "}
+                      {w.balance.toLocaleString("id-ID")})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <input
                 required
                 type="text"
                 placeholder={
-                  transactionType === "income" ? "Sumber Dana" : "Deskripsi"
+                  transactionType === "income"
+                    ? "Sumber Dana (Misal: Gaji)"
+                    : "Deskripsi Pengeluaran"
                 }
                 className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
                 value={transactionName}
@@ -351,8 +441,9 @@ export default function DashboardHomePage() {
                 value={transactionAmount}
                 onChange={(e) => setTransactionAmount(e.target.value)}
               />
+
               {transactionType === "expense" && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 mt-2">
                   {CATEGORIES.filter((c) => c.name !== "Income").map((c) => (
                     <button
                       key={c.name}
@@ -367,20 +458,21 @@ export default function DashboardHomePage() {
                   ))}
                 </div>
               )}
-              <div className="flex gap-4 pt-2">
+
+              <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400"
+                  className="flex-1 font-black text-[10px] uppercase text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex-1 py-4 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg ${transactionType === "income" ? "bg-emerald-500" : "bg-blue-600"}`}
+                  className={`flex-1 py-4 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${transactionType === "income" ? "bg-emerald-500" : "bg-blue-600"} disabled:opacity-50`}
                 >
-                  Save Record
+                  {loading ? "Menyimpan..." : "Save Record"}
                 </button>
               </div>
             </form>

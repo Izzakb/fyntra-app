@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner"; // IMPORT TOAST
 
 export default function AvatarUpload({
   url,
@@ -12,7 +13,6 @@ export default function AvatarUpload({
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // 1. Tarik gambar kalau URL-nya sudah ada di database
   useEffect(() => {
     if (url) downloadImage(url);
   }, [url]);
@@ -30,34 +30,33 @@ export default function AvatarUpload({
     }
   };
 
-  // 2. Fungsi Utama Upload
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
       if (!user) return;
 
       if (!event.target.files || event.target.files.length === 0) {
-        throw new Error("Kamu harus memilih gambar buat diupload.");
+        throw new Error("Pilih gambar terlebih dahulu.");
       }
 
       const file = event.target.files[0];
       const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`; // Nama file unik
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
 
-      // A. Upload file ke Storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      // B. Kasih tau parent (DashboardSettings) kalau upload sukses
+      toast.success("Foto Terunggah!", {
+        description: "Klik 'Simpan Perubahan' untuk menerapkan.",
+      });
       onUpload(filePath);
     } catch (error: any) {
-      alert(error.message);
+      toast.error("Gagal Upload", { description: error.message });
     } finally {
       setUploading(false);
     }
@@ -70,7 +69,7 @@ export default function AvatarUpload({
           <img
             src={avatarUrl}
             alt="Avatar"
-            className="w-24 h-24 rounded-3xl object-cover shadow-lg"
+            className="w-24 h-24 rounded-3xl object-cover shadow-lg border-2 border-slate-100"
           />
         ) : (
           <div className="w-24 h-24 bg-gradient-to-tr from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center text-3xl shadow-inner border border-slate-100">
@@ -90,7 +89,7 @@ export default function AvatarUpload({
         </label>
         <button
           disabled={uploading}
-          className="relative px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-blue-600 transition disabled:opacity-50 overflow-hidden"
+          className="relative px-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-blue-600 transition disabled:opacity-50 overflow-hidden shadow-md"
         >
           {uploading ? "MENYINKRONKAN..." : "Ganti Avatar"}
           <input

@@ -8,24 +8,33 @@ import {
 } from "react";
 import { supabase } from "@/lib/supabase";
 
-// 1. Definisikan bentuk data yang akan disimpan di "Pusat Data Global"
-interface FyntraContextType {
-  fullName: string;
+// 1. Buat tipe data untuk Dompet
+export interface Wallet {
+  id: string;
+  wallet_name: string;
   balance: number;
-  loadingGlobal: boolean;
-  refreshGlobalData: () => Promise<void>; // Fungsi pengganti onUpdate
+  icon: string;
+  is_default: boolean;
 }
 
-// 2. Buat Context-nya (Awalnya kosong)
+interface FyntraContextType {
+  fullName: string;
+  balance: number; // Ini sekarang adalah TOTAL dari semua dompet (Master Balance)
+  wallets: Wallet[]; // Ini adalah daftar dompetnya
+  avatarUrl: string | null;
+  loadingGlobal: boolean;
+  refreshGlobalData: () => Promise<void>;
+}
+
 const FyntraContext = createContext<FyntraContextType | undefined>(undefined);
 
-// 3. Buat Provider (Pembungkus yang menyediakan data)
 export function FyntraProvider({ children }: { children: ReactNode }) {
   const [fullName, setFullName] = useState("");
   const [balance, setBalance] = useState(0);
+  const [wallets, setWallets] = useState<Wallet[]>([]); // State untuk menyimpan banyak dompet
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loadingGlobal, setLoadingGlobal] = useState(true);
 
-  // Fungsi sakti untuk menarik data terbaru dari Supabase
   const refreshGlobalData = async () => {
     const {
       data: { user },
@@ -35,44 +44,66 @@ export function FyntraProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Ambil Profil (Nama)
+    // Ambil Profil & Avatar
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, avatar_url")
       .eq("id", user.id)
       .single();
 
-    // Ambil Wallet (Saldo Terupdate)
-    const { data: wallet } = await supabase
+    // Ambil SEMUA DOMPET milik user ini
+    const { data: userWallets, error: walletError } = await supabase
       .from("fyntra_wallets")
-      .select("balance")
+      .select("*")
       .eq("user_id", user.id)
-      .single();
+      .order("created_at", { ascending: true });
 
-    if (profile) setFullName(profile.full_name);
-    if (wallet) setBalance(wallet.balance);
+    if (profile) {
+      setFullName(profile.full_name);
+      if (profile.avatar_url) {
+        const { data: imgData } = await supabase.storage
+          .from("avatars")
+          .download(profile.avatar_url);
+        if (imgData) setAvatarUrl(URL.createObjectURL(imgData));
+      }
+    }
+
+    if (userWallets) {
+      setWallets(userWallets);
+      // Kalkulasi Master Balance (Total semua saldo dompet)
+      const totalBalance = userWallets.reduce(
+        (total, wallet) => total + Number(wallet.balance),
+        0,
+      );
+      setBalance(totalBalance);
+    }
+
     setLoadingGlobal(false);
   };
 
-  // Tarik data pertama kali saat aplikasi dibuka
   useEffect(() => {
     refreshGlobalData();
   }, []);
 
   return (
     <FyntraContext.Provider
-      value={{ fullName, balance, loadingGlobal, refreshGlobalData }}
+      value={{
+        fullName,
+        balance,
+        wallets,
+        avatarUrl,
+        loadingGlobal,
+        refreshGlobalData,
+      }}
     >
       {children}
     </FyntraContext.Provider>
   );
 }
 
-// 4. Buat Custom Hook agar komponen lain gampang mengambil data
 export function useFyntra() {
   const context = useContext(FyntraContext);
-  if (context === undefined) {
+  if (context === undefined)
     throw new Error("useFyntra harus digunakan di dalam FyntraProvider");
-  }
   return context;
 }

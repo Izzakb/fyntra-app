@@ -13,6 +13,12 @@ const MENU_ITEMS = [
     path: "/dashboard/transactions",
   },
   { id: "goals", label: "Future Goals", icon: "🎯", path: "/dashboard/goals" },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "⚙️",
+    path: "/dashboard/settings",
+  },
 ];
 
 export default function Sidebar() {

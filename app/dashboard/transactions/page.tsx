@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
-import { toast } from "sonner"; // <-- IMPORT SONNER
+import { toast } from "sonner";
 
 const CATEGORIES = [
   { name: "Semua", icon: "🌈" },
@@ -15,7 +15,8 @@ const CATEGORIES = [
 ];
 
 export default function TransactionsPage() {
-  const { refreshGlobalData } = useFyntra();
+  // 1. PANGGIL WALLETS DARI CONTEXT UNTUK DITAMPILKAN
+  const { refreshGlobalData, wallets } = useFyntra();
 
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,9 @@ export default function TransactionsPage() {
   const [editDescription, setEditDescription] = useState("");
   const [editType, setEditType] = useState<"income" | "expense">("expense");
   const [editCategory, setEditCategory] = useState("Makanan");
+
+  // 2. STATE BARU UNTUK EDIT DOMPET
+  const [editWalletId, setEditWalletId] = useState("");
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -57,19 +61,32 @@ export default function TransactionsPage() {
     setEditDescription(t.description);
     setEditType(t.type);
     setEditCategory(t.category);
+
+    // 3. SET DOMPET DEFAULT SAAT EDIT DIBUKA
+    setEditWalletId(t.wallet_id || (wallets.length > 0 ? wallets[0].id : ""));
+
     setShowEditModal(true);
   };
 
   const handleUpdateTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editWalletId) {
+      toast.error("Validasi Gagal", {
+        description: "Pilih sumber dana terlebih dahulu.",
+      });
+      return;
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user || !editingId) return;
 
+    // 4. KIRIM p_new_wallet_id KE SUPABASE UNTUK ALGORITMA PINDAH DOMPET
     const { error } = await supabase.rpc("update_fyntra_transaction", {
       p_transaction_id: editingId,
       p_user_id: user.id,
+      p_new_wallet_id: editWalletId, // <-- INI YANG BARU
       p_new_amount: parseInt(editAmount),
       p_new_type: editType,
       p_new_category: editType === "income" ? "Income" : editCategory,
@@ -80,7 +97,7 @@ export default function TransactionsPage() {
       toast.error("Gagal Update", { description: error.message });
     } else {
       toast.success("Update Berhasil!", {
-        description: "Data transaksi dan saldo telah disesuaikan.",
+        description: "Data transaksi dan saldo dompet telah disesuaikan.",
       });
       setShowEditModal(false);
       refreshGlobalData();
@@ -89,7 +106,12 @@ export default function TransactionsPage() {
   };
 
   const handleDeleteTransaction = async (transactionId: string) => {
-    if (!confirm("Batalkan transaksi? Saldo akan kembali otomatis.")) return;
+    if (
+      !confirm(
+        "Batalkan transaksi? Saldo akan dikembalikan otomatis ke dompet asal.",
+      )
+    )
+      return;
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -102,7 +124,7 @@ export default function TransactionsPage() {
 
     if (!error) {
       toast.success("Transaksi Dibatalkan", {
-        description: "Saldo Anda telah dikembalikan.",
+        description: "Saldo dompet Anda telah dikembalikan.",
       });
       refreshGlobalData();
       fetchTransactions();
@@ -122,6 +144,12 @@ export default function TransactionsPage() {
     });
   }, [transactions, searchQuery, filterCategory]);
 
+  // Fungsi pembantu untuk mencari nama/ikon dompet berdasarkan ID
+  const getWalletDetails = (walletId: string) => {
+    const wallet = wallets.find((w) => w.id === walletId);
+    return wallet ? `${wallet.icon} ${wallet.wallet_name}` : "💳 Dompet Utama";
+  };
+
   return (
     <div className="animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
@@ -137,7 +165,7 @@ export default function TransactionsPage() {
           <input
             type="text"
             placeholder="Cari deskripsi..."
-            className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-bold text-xs"
+            className="w-full px-6 py-4 bg-white border border-slate-100 rounded-2xl font-bold text-xs focus:ring-2 focus:ring-blue-600/20 outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -181,14 +209,20 @@ export default function TransactionsPage() {
                     <p className="font-black text-slate-900 text-sm italic">
                       {t.description}
                     </p>
-                    <p className="text-[9px] font-bold text-slate-300 uppercase italic mt-1">
-                      {t.category} •{" "}
-                      {new Date(t.created_at).toLocaleDateString("id-ID")}
-                    </p>
+                    {/* 5. TAMPILKAN NAMA DOMPET DI SINI */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase italic border border-slate-200 px-2 py-0.5 rounded-md bg-white">
+                        {getWalletDetails(t.wallet_id)}
+                      </span>
+                      <p className="text-[9px] font-bold text-slate-300 uppercase italic">
+                        • {t.category} •{" "}
+                        {new Date(t.created_at).toLocaleDateString("id-ID")}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end">
+                <div className="text-right flex flex-col items-end mt-4 md:mt-0">
                   <p
                     className={`text-lg font-black italic tracking-tighter ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
                   >
@@ -198,13 +232,13 @@ export default function TransactionsPage() {
                   <div className="flex items-center gap-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => openEditModal(t)}
-                      className="text-[9px] font-black text-blue-500 hover:text-blue-700 uppercase tracking-widest"
+                      className="text-[9px] font-black text-blue-500 hover:text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-md"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteTransaction(t.id)}
-                      className="text-[9px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-widest"
+                      className="text-[9px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-md"
                     >
                       Batalkan
                     </button>
@@ -227,7 +261,7 @@ export default function TransactionsPage() {
             <h3 className="text-2xl font-black italic mb-6">
               Edit Transaction
             </h3>
-            <form onSubmit={handleUpdateTransaction} className="space-y-6">
+            <form onSubmit={handleUpdateTransaction} className="space-y-5">
               <div className="flex p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
@@ -244,6 +278,30 @@ export default function TransactionsPage() {
                   Pemasukan
                 </button>
               </div>
+
+              {/* 6. DROPDOWN EDIT SUMBER DANA */}
+              <div>
+                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
+                  Sumber Dana
+                </label>
+                <select
+                  required
+                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 appearance-none cursor-pointer focus:ring-2 focus:ring-blue-600/20 outline-none"
+                  value={editWalletId}
+                  onChange={(e) => setEditWalletId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Pilih Dompet...
+                  </option>
+                  {wallets.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.icon} {w.wallet_name} (Sisa: Rp{" "}
+                      {w.balance.toLocaleString("id-ID")})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <input
                 required
                 type="text"
@@ -260,9 +318,12 @@ export default function TransactionsPage() {
                 onChange={(e) => setEditAmount(e.target.value)}
                 placeholder="Nominal"
               />
+
               {editType === "expense" && (
-                <div className="grid grid-cols-3 gap-2">
-                  {CATEGORIES.filter((c) => c.name !== "Semua").map((c) => (
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  {CATEGORIES.filter(
+                    (c) => c.name !== "Semua" && c.name !== "Income",
+                  ).map((c) => (
                     <button
                       key={c.name}
                       type="button"
@@ -276,17 +337,18 @@ export default function TransactionsPage() {
                   ))}
                 </div>
               )}
-              <div className="flex gap-4 pt-2">
+
+              <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400"
+                  className="flex-1 font-black text-[10px] uppercase text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg"
+                  className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-600 transition-all"
                 >
                   Simpan Perubahan
                 </button>

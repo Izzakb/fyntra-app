@@ -1,16 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import AvatarUpload from "./AvatarUpload"; // IMPORT INI
+import AvatarUpload from "@/components/AvatarUpload";
+import { toast } from "sonner";
+import { useFyntra } from "@/context/FyntraContext"; // IMPORT OTAL GLOBAL
 
-export default function DashboardSettings() {
+export default function SettingsPage() {
+  const { refreshGlobalData } = useFyntra(); // Untuk sinkronisasi instan
+
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // TAMBAH INI
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  // 1. Ambil data profil
   useEffect(() => {
     const getProfile = async () => {
       const {
@@ -19,14 +22,13 @@ export default function DashboardSettings() {
       if (user) {
         const { data } = await supabase
           .from("profiles")
-          .select("full_name, username, avatar_url") // TAMBAH avatar_url
+          .select("full_name, username, avatar_url")
           .eq("id", user.id)
           .single();
-
         if (data) {
           setFullName(data.full_name || "");
           setUsername(data.username || "");
-          setAvatarUrl(data.avatar_url || null); // TAMBAH INI
+          setAvatarUrl(data.avatar_url || null);
         }
       }
       setLoading(false);
@@ -34,7 +36,6 @@ export default function DashboardSettings() {
     getProfile();
   }, []);
 
-  // 2. Fungsi Update ke Database
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
@@ -48,29 +49,34 @@ export default function DashboardSettings() {
       .update({
         full_name: fullName,
         username: username?.toLowerCase(),
-        avatar_url: avatarUrl, // SIMPAN URL AVATAR BARU
+        avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user?.id);
 
     if (error) {
-      alert("Gagal Update: " + error.message);
+      toast.error("Gagal Update", { description: error.message });
     } else {
-      alert("Profil Ekosistem Faizax Berhasil Diperbarui! 🦾");
-      window.location.reload();
+      toast.success("Profil Diperbarui! 🦾", {
+        description: "Identitas Ekosistem Faizax tersimpan.",
+      });
+
+      // HILANGKAN window.location.reload()
+      // GANTI DENGAN TRIGGER UPDATE GLOBAL
+      refreshGlobalData();
     }
     setUpdating(false);
   };
 
   if (loading)
     return (
-      <div className="p-10 font-black animate-pulse text-blue-600 italic">
+      <div className="p-10 font-black animate-pulse text-slate-300 italic uppercase tracking-widest text-sm bg-white rounded-[3rem] border border-slate-100 text-center">
         MENGAMBIL IDENTITAS...
       </div>
     );
 
   return (
-    <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-2xl animate-in fade-in duration-700 pb-20">
       <header className="mb-10">
         <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase italic leading-none">
           Pengaturan Profil
@@ -82,13 +88,9 @@ export default function DashboardSettings() {
 
       <form
         onSubmit={handleUpdate}
-        className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 space-y-8"
+        className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-8"
       >
-        {/* PANGGIL KOMPONEN UPLOAD DI SINI */}
-        <AvatarUpload
-          url={avatarUrl}
-          onUpload={(url) => setAvatarUrl(url)} // Kalau upload sukses, state di parent berubah
-        />
+        <AvatarUpload url={avatarUrl} onUpload={(url) => setAvatarUrl(url)} />
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -126,7 +128,7 @@ export default function DashboardSettings() {
         <button
           disabled={updating}
           type="submit"
-          className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.3em] text-xs hover:bg-blue-600 active:scale-[0.98] transition-all shadow-2xl shadow-slate-200 disabled:opacity-50"
+          className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.3em] text-xs hover:bg-blue-600 transition-all shadow-lg disabled:opacity-50"
         >
           {updating ? "MENYINKRONKAN..." : "SIMPAN PERUBAHAN"}
         </button>
