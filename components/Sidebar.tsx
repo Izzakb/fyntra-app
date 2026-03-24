@@ -37,7 +37,7 @@ export default function Sidebar() {
   const pathname = usePathname(); // Membaca URL saat ini
 
   return (
-    <aside className="w-72 bg-slate-950 text-white border-r border-slate-900 h-screen sticky top-0 flex flex-col p-8 transition-all">
+    <aside className="hidden md:flex flex-col w-72 bg-slate-950 text-white border-r border-slate-900 h-screen sticky top-0 flex flex-col p-8 transition-all">
       {/* LOGO AREA */}
       <div className="mb-12 px-4">
         <h1 className="text-2xl font-black italic tracking-tighter text-white">

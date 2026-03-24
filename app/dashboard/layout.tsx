@@ -1,6 +1,7 @@
 "use client";
 import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
+import BottomNav from "@/components/BottomNav"; // IMPORT INI
 import { FyntraProvider } from "@/context/FyntraContext";
 import { Toaster } from "sonner";
 
@@ -10,34 +11,24 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    // 1. PROVIDER: Membungkus seluruh aplikasi agar data saldo sinkron
     <FyntraProvider>
       <div className="flex bg-slate-50 min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900">
-        {/* 2. SIDEBAR: Navigasi Kiri (Tetap diam saat pindah halaman) */}
-        <Sidebar />
-
-        {/* AREA KONTEN UTAMA */}
+        <Sidebar /> {/* Sembunyi di mobile */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-          {/* 3. TOPNAV: Navigasi Atas (Glassmorphism & Profil) */}
           <TopNav />
-
-          {/* 4. KONTEN DINAMIS: Tempat halaman Home/Transactions/Goals muncul */}
-          <main className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
+          {/* PERBAIKI PADDING: p-4 di mobile, p-10 di desktop. TAMBAHKAN pb-28 agar konten tidak tertutup BottomNav */}
+          <main className="flex-1 overflow-y-auto p-4 md:p-10 pb-28 md:pb-10 custom-scrollbar">
             <div className="max-w-6xl mx-auto w-full">{children}</div>
           </main>
+          <BottomNav /> {/* Muncul di mobile */}
         </div>
       </div>
 
-      {/* 5. TOASTER: Pusat Notifikasi (Muncul di pojok kanan bawah) */}
       <Toaster
         position="bottom-right"
         richColors
         toastOptions={{
-          style: {
-            borderRadius: "1rem",
-            fontWeight: "900", // Font tebal agar senada dengan Faizax Style
-            padding: "1rem",
-          },
+          style: { borderRadius: "1rem", fontWeight: "900", padding: "1rem" },
         }}
       />
     </FyntraProvider>

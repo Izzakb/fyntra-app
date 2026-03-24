@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import AiAdvisor from "@/components/AiAdvisor"; // <-- IMPORT KARTU AI
 
 const CATEGORIES = [
   { name: "Makanan", icon: "🍔" },
@@ -24,7 +25,6 @@ const CATEGORIES = [
 ];
 
 export default function DashboardHomePage() {
-  // 1. PANGGIL WALLETS DARI CONTEXT
   const { balance, wallets, refreshGlobalData, loadingGlobal } = useFyntra();
 
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,6 @@ export default function DashboardHomePage() {
   const [transactionName, setTransactionName] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Makanan");
-
-  // 2. STATE UNTUK PILIH DOMPET
   const [selectedWalletId, setSelectedWalletId] = useState("");
 
   const fetchData = async () => {
@@ -70,10 +68,8 @@ export default function DashboardHomePage() {
     fetchData();
   }, [balance]);
 
-  // Set default dompet saat modal dibuka
   const openModal = () => {
     if (wallets.length > 0) {
-      // Cari dompet default, kalau tidak ada, pakai dompet pertama
       const defaultWallet = wallets.find((w) => w.is_default) || wallets[0];
       setSelectedWalletId(defaultWallet.id);
     }
@@ -98,6 +94,27 @@ export default function DashboardHomePage() {
     return { income, expense, net: income - expense };
   }, [transactions]);
 
+  // LOGIKA AI: Cari kategori paling boros bulan ini
+  const topExpenseCategory = useMemo(() => {
+    const now = new Date();
+    const expenses = transactions.filter(
+      (t) =>
+        t.type === "expense" &&
+        new Date(t.created_at).getMonth() === now.getMonth() &&
+        new Date(t.created_at).getFullYear() === now.getFullYear(),
+    );
+    if (expenses.length === 0) return "Belum ada";
+
+    const grouped = expenses.reduce((acc: any, curr: any) => {
+      acc[curr.category] = (acc[curr.category] || 0) + Number(curr.amount);
+      return acc;
+    }, {});
+
+    return Object.keys(grouped).reduce((a, b) =>
+      grouped[a] > grouped[b] ? a : b,
+    );
+  }, [transactions]);
+
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedWalletId) {
@@ -116,10 +133,9 @@ export default function DashboardHomePage() {
       return;
     }
 
-    // 3. KIRIM p_wallet_id KE SUPABASE
     const { error } = await supabase.rpc("process_fyntra_transaction", {
       p_user_id: user.id,
-      p_wallet_id: selectedWalletId, // <-- INI YANG BARU
+      p_wallet_id: selectedWalletId,
       p_amount: parseInt(transactionAmount),
       p_type: transactionType,
       p_category: transactionType === "income" ? "Income" : selectedCategory,
@@ -172,16 +188,18 @@ export default function DashboardHomePage() {
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
       </div>
 
-      {/* 4. DAFTAR DOMPET (SCROLL HORIZONTAL) */}
+      {/* DAFTAR DOMPET */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-2">
           <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 italic">
             Dompet Aktif
           </h3>
-          {/* Nanti ini bisa diarahkan ke halaman Manage Wallets */}
-          <button className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-700">
+          <Link
+            href="/dashboard/wallets"
+            className="text-[9px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-700"
+          >
             Manage →
-          </button>
+          </Link>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
           {wallets.map((w) => (
@@ -211,6 +229,14 @@ export default function DashboardHomePage() {
           ))}
         </div>
       </div>
+
+      {/* --- KARTU AI ADVISOR GEMINI --- */}
+      <AiAdvisor
+        income={monthlyStats.income}
+        expense={monthlyStats.expense}
+        balance={balance}
+        topCategory={topExpenseCategory}
+      />
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -375,7 +401,7 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* MODAL TRANSAKSI (DENGAN DROPDOWN DOMPET) */}
+      {/* MODAL TRANSAKSI */}
       {showTransactionModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
           <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300">
@@ -398,7 +424,6 @@ export default function DashboardHomePage() {
                 </button>
               </div>
 
-              {/* 5. DROPDOWN PILIH DOMPET */}
               <div>
                 <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
                   Sumber Dana
