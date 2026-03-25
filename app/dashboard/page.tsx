@@ -25,13 +25,20 @@ const CATEGORIES = [
 ];
 
 export default function DashboardHomePage() {
-  const { balance, wallets, refreshGlobalData, loadingGlobal } = useFyntra();
+  // 1. PANGGIL DATA WEALTH DARI CONTEXT BARU
+  const {
+    balance,
+    totalInvestment,
+    netWorth,
+    wallets,
+    refreshGlobalData,
+    loadingGlobal,
+  } = useFyntra();
 
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
 
-  // --- STATE FORM TRANSAKSI ---
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -41,12 +48,10 @@ export default function DashboardHomePage() {
   const [selectedCategory, setSelectedCategory] = useState("Makanan");
   const [selectedWalletId, setSelectedWalletId] = useState("");
 
-  // --- STATE MAGIC AI ---
   const [magicText, setMagicText] = useState("");
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
-  // FUNGSI 1: MAGIC PROCESS (AI)
   const handleMagicProcess = async (textToProcess: string = magicText) => {
     if (!textToProcess) return toast.error("Ketik sesuatu dulu Bos!");
     setIsMagicLoading(true);
@@ -64,7 +69,6 @@ export default function DashboardHomePage() {
     setIsMagicLoading(false);
   };
 
-  // FUNGSI 2: SCAN STRUK
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -87,7 +91,6 @@ export default function DashboardHomePage() {
     };
   };
 
-  // FUNGSI 3: MIC INPUT
   const startListening = () => {
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
@@ -105,10 +108,8 @@ export default function DashboardHomePage() {
     recognition.start();
   };
 
-  // FUNGSI 4: APPLY AI DATA
   const applyMagicData = (data: any) => {
     if (data.error) return toast.error(data.error);
-    console.log("HASIL AI:", data);
     if (data.amount) setTransactionAmount(data.amount.toString());
     if (data.description) setTransactionName(data.description);
     if (data.type) setTransactionType(data.type);
@@ -127,7 +128,6 @@ export default function DashboardHomePage() {
     setMagicText("");
   };
 
-  // FETCH DATA
   const fetchData = async () => {
     const {
       data: { user },
@@ -212,31 +212,56 @@ export default function DashboardHomePage() {
 
   if (loadingGlobal)
     return (
-      <div className="p-10 font-black italic text-slate-300">
+      <div className="p-10 font-black italic text-slate-300 dark:text-slate-700">
         Syncing Ledger...
       </div>
     );
 
   return (
-    <div className="animate-in fade-in duration-700 space-y-10 pb-20">
-      {/* HEADER / BALANCE */}
-      <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">
-              Master Balance
-            </p>
-            <h2 className="text-5xl md:text-6xl font-black italic tracking-tighter">
-              Rp {balance.toLocaleString("id-ID")}
-            </h2>
+    <div className="bg-transparent min-h-screen transition-colors duration-300 space-y-10 pb-20">
+      {/* 2. HEADER WEALTH DASHBOARD (DESAIN BARU) */}
+      <div className="bg-slate-900 dark:bg-blue-600 p-10 md:p-12 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden transition-all duration-300">
+        <div className="relative z-10 flex flex-col gap-8">
+          {/* Baris Atas: Uang Liquid & Tombol Transaksi */}
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div>
+              <p className="text-slate-400 dark:text-blue-200 text-[10px] font-black uppercase tracking-[0.5em] mb-3">
+                Liquid Cash (Siap Pakai)
+              </p>
+              <h2 className="text-5xl md:text-6xl font-black italic tracking-tighter">
+                Rp {balance.toLocaleString("id-ID")}
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowTransactionModal(true)}
+              className="px-8 py-4 bg-blue-600 dark:bg-white dark:text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap hover:scale-105 active:scale-95 transition-all"
+            >
+              + Add Transaction
+            </button>
           </div>
-          <button
-            onClick={() => setShowTransactionModal(true)}
-            className="px-10 py-5 bg-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap"
-          >
-            + Add Transaction
-          </button>
+
+          {/* Baris Bawah: Investasi & Master Asset */}
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-800 dark:border-blue-500/50 pt-6 mt-2">
+            <div>
+              <p className="text-slate-400 dark:text-blue-200 text-[9px] font-black uppercase tracking-widest mb-1">
+                Total Investment
+              </p>
+              <p className="text-xl md:text-2xl font-black italic">
+                Rp {totalInvestment.toLocaleString("id-ID")}
+              </p>
+            </div>
+            <div>
+              <p className="text-emerald-400 dark:text-emerald-300 text-[9px] font-black uppercase tracking-widest mb-1">
+                Net Worth (Master Asset)
+              </p>
+              <p className="text-xl md:text-2xl font-black italic text-emerald-400 dark:text-white">
+                Rp {netWorth.toLocaleString("id-ID")}
+              </p>
+            </div>
+          </div>
         </div>
+        {/* Dekorasi Background */}
+        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl z-0 pointer-events-none"></div>
       </div>
 
       {/* DOMPET LIST */}
@@ -244,19 +269,18 @@ export default function DashboardHomePage() {
         {wallets.map((w) => (
           <div
             key={w.id}
-            className="min-w-[220px] bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm"
+            className="min-w-[220px] bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300"
           >
-            <p className="font-black text-xs uppercase italic text-slate-800 mb-4">
+            <p className="font-black text-xs uppercase italic text-slate-800 dark:text-slate-300 mb-4">
               {w.icon} {w.wallet_name}
             </p>
-            <p className="font-black text-xl text-blue-600 italic tracking-tighter">
+            <p className="font-black text-xl text-blue-600 dark:text-blue-400 italic tracking-tighter">
               Rp {w.balance.toLocaleString("id-ID")}
             </p>
           </div>
         ))}
       </div>
 
-      {/* AI ADVISOR */}
       <AiAdvisor
         income={monthlyStats.income}
         expense={monthlyStats.expense}
@@ -266,7 +290,7 @@ export default function DashboardHomePage() {
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
             Income (Month)
           </p>
@@ -274,7 +298,7 @@ export default function DashboardHomePage() {
             +Rp {monthlyStats.income.toLocaleString("id-ID")}
           </p>
         </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
             Expense (Month)
           </p>
@@ -282,23 +306,23 @@ export default function DashboardHomePage() {
             -Rp {monthlyStats.expense.toLocaleString("id-ID")}
           </p>
         </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
             Cashflow
           </p>
           <p
-            className={`text-2xl font-black ${monthlyStats.net >= 0 ? "text-blue-600" : "text-orange-500"}`}
+            className={`text-2xl font-black ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
           >
             Rp {monthlyStats.net.toLocaleString("id-ID")}
           </p>
         </div>
       </div>
 
-      {/* --- INI DIA YANG ILANG: GOALS & CHART --- */}
+      {/* GOALS & CHART */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col">
+        <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm h-80 flex flex-col transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 italic">
               Future Goals
             </h3>
             <Link
@@ -318,14 +342,14 @@ export default function DashboardHomePage() {
                 return (
                   <div key={g.id} className="space-y-3">
                     <div className="flex justify-between items-end">
-                      <p className="font-black text-sm text-slate-800 uppercase italic truncate max-w-[150px]">
+                      <p className="font-black text-sm text-slate-800 dark:text-slate-200 uppercase italic truncate max-w-[150px]">
                         {g.goal_name}
                       </p>
-                      <p className="font-black text-blue-600 text-sm italic">
+                      <p className="font-black text-blue-600 dark:text-blue-400 text-sm italic">
                         {progress}%
                       </p>
                     </div>
-                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-600 transition-all duration-1000"
                         style={{ width: `${progress}%` }}
@@ -342,8 +366,8 @@ export default function DashboardHomePage() {
           </div>
         </div>
 
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm h-80 flex flex-col">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-6 italic text-center w-full">
+        <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm h-80 flex flex-col transition-colors duration-300">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 mb-6 italic text-center w-full">
             Cashflow Chart
           </h3>
           <div className="h-full w-full">
@@ -361,8 +385,14 @@ export default function DashboardHomePage() {
                   tick={{ fontSize: 10, fontWeight: "bold" }}
                 />
                 <Tooltip
-                  cursor={{ fill: "#f8fafc" }}
-                  formatter={(v: any) => [`Rp${Number(v).toLocaleString()}`]}
+                  cursor={{ fill: "transparent" }}
+                  contentStyle={{
+                    borderRadius: "20px",
+                    border: "none",
+                    backgroundColor: "var(--card)",
+                    color: "var(--foreground)",
+                    fontWeight: "bold",
+                  }}
                 />
                 <Bar dataKey="t" radius={[6, 6, 6, 6]} barSize={45}>
                   {[{ c: "#10b981" }, { c: "#f43f5e" }].map((e, i) => (
@@ -376,27 +406,27 @@ export default function DashboardHomePage() {
       </div>
 
       {/* RECENT ACTIVITY */}
-      <div className="bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-sm">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic mb-8">
+      <div className="bg-white dark:bg-slate-900 p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 italic mb-8">
           Recent Activity
         </h3>
         <div className="space-y-4">
           {transactions.slice(0, 5).map((t) => (
             <div
               key={t.id}
-              className="flex justify-between items-center p-5 bg-slate-50/50 rounded-[2rem] border border-slate-50"
+              className="flex justify-between items-center p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-50 dark:border-slate-800 transition-colors"
             >
               <div className="flex items-center gap-5">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg ${t.type === "income" ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"}`}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg ${t.type === "income" ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400"}`}
                 >
                   {t.type === "income" ? "💰" : "💸"}
                 </div>
                 <div>
-                  <p className="font-black text-sm text-slate-800">
+                  <p className="font-black text-sm text-slate-800 dark:text-slate-200">
                     {t.description}
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase">
                     {t.category}
                   </p>
                 </div>
@@ -404,7 +434,7 @@ export default function DashboardHomePage() {
               <p
                 className={`font-black text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
               >
-                {t.type === "income" ? "+" : "-"} Rp
+                {t.type === "income" ? "+" : "-"} Rp{" "}
                 {t.amount.toLocaleString("id-ID")}
               </p>
             </div>
@@ -412,19 +442,23 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* MODAL TRANSAKSI */}
+      {/* MODAL TRANSAKSI (DARK MODE READY) */}
       {showTransactionModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-2xl font-black italic mb-6">Add Transaction</h3>
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-10 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar border border-transparent dark:border-slate-800 transition-colors">
+            <h3 className="text-2xl font-black italic mb-6 dark:text-white text-slate-900">
+              Add Transaction
+            </h3>
+
+            {/* MAGIC BOX */}
             <div className="mb-8 p-1 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-lg">
-              <div className="bg-white rounded-[1.4rem] p-4 flex flex-col gap-3">
+              <div className="bg-white dark:bg-slate-800 rounded-[1.4rem] p-4 flex flex-col gap-3 transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-purple-600">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
                     ✨ AI Magic Input
                   </span>
                   <div className="flex gap-2">
-                    <label className="cursor-pointer bg-slate-100 p-2 rounded-xl text-sm">
+                    <label className="cursor-pointer bg-slate-100 dark:bg-slate-700 p-2 rounded-xl text-sm transition-colors">
                       📸{" "}
                       <input
                         type="file"
@@ -436,7 +470,7 @@ export default function DashboardHomePage() {
                     <button
                       type="button"
                       onClick={startListening}
-                      className={`p-2 rounded-xl text-sm ${isListening ? "bg-rose-100 text-rose-500 animate-pulse" : "bg-slate-100"}`}
+                      className={`p-2 rounded-xl text-sm transition-all ${isListening ? "bg-rose-100 text-rose-500 animate-pulse" : "bg-slate-100 dark:bg-slate-700"}`}
                     >
                       {isListening ? "🎙️" : "🎤"}
                     </button>
@@ -446,7 +480,7 @@ export default function DashboardHomePage() {
                   <input
                     type="text"
                     placeholder="Contoh: Kopi 15rb"
-                    className="flex-1 bg-slate-50 border border-slate-100 px-4 py-3 rounded-2xl text-xs font-bold outline-none"
+                    className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 px-4 py-3 rounded-2xl text-xs font-bold dark:text-white outline-none transition-colors"
                     value={magicText}
                     onChange={(e) => setMagicText(e.target.value)}
                     onKeyDown={(e) =>
@@ -458,37 +492,40 @@ export default function DashboardHomePage() {
                     type="button"
                     onClick={() => handleMagicProcess()}
                     disabled={isMagicLoading}
-                    className="bg-slate-900 text-white px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                    className="bg-slate-900 dark:bg-blue-600 text-white px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-colors"
                   >
                     {isMagicLoading ? "..." : "Gas"}
                   </button>
                 </div>
               </div>
             </div>
+
+            {/* FORM */}
             <form onSubmit={handleSubmitTransaction} className="space-y-5">
-              <div className="flex p-1 bg-slate-100 rounded-2xl">
+              <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-colors">
                 <button
                   type="button"
                   onClick={() => setTransactionType("expense")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "expense" ? "bg-white text-rose-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "expense" ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-400"}`}
                 >
                   Expense
                 </button>
                 <button
                   type="button"
                   onClick={() => setTransactionType("income")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "income" ? "bg-white text-emerald-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "income" ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm" : "text-slate-400"}`}
                 >
                   Income
                 </button>
               </div>
+
               <div>
-                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">
+                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
                   Sumber Dana
                 </label>
                 <select
                   required
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
+                  className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
                 >
@@ -499,11 +536,12 @@ export default function DashboardHomePage() {
                   ))}
                 </select>
               </div>
+
               <input
                 required
                 type="text"
                 placeholder="Deskripsi"
-                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                 value={transactionName}
                 onChange={(e) => setTransactionName(e.target.value)}
               />
@@ -511,10 +549,11 @@ export default function DashboardHomePage() {
                 required
                 type="number"
                 placeholder="Nominal (Rp)"
-                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                 value={transactionAmount}
                 onChange={(e) => setTransactionAmount(e.target.value)}
               />
+
               {transactionType === "expense" && (
                 <div className="grid grid-cols-3 gap-2">
                   {CATEGORIES.filter((c) => c.name !== "Income").map((c) => (
@@ -522,7 +561,7 @@ export default function DashboardHomePage() {
                       key={c.name}
                       type="button"
                       onClick={() => setSelectedCategory(c.name)}
-                      className={`p-3 rounded-xl border text-[10px] font-black transition-all ${selectedCategory === c.name ? "bg-blue-600 text-white" : "bg-white text-slate-400"}`}
+                      className={`p-3 rounded-xl border text-[10px] font-black transition-all ${selectedCategory === c.name ? "bg-blue-600 text-white" : "bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-400"}`}
                     >
                       {c.icon}
                       <br />
@@ -531,18 +570,19 @@ export default function DashboardHomePage() {
                   ))}
                 </div>
               )}
+
               <div className="flex gap-4 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400"
+                  className="flex-1 font-black text-[10px] uppercase text-slate-400 dark:text-slate-500 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest"
+                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                 >
                   {loading ? "Saving..." : "Save Record"}
                 </button>

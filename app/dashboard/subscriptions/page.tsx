@@ -26,7 +26,7 @@ export default function SubscriptionsPage() {
   const [type, setType] = useState<"expense" | "income">("expense");
   const [category, setCategory] = useState("Hiburan");
   const [walletId, setWalletId] = useState("");
-  const [recDate, setRecDate] = useState("1"); // Default tanggal 1
+  const [recDate, setRecDate] = useState("1");
 
   const fetchSubs = async () => {
     setLoading(true);
@@ -122,19 +122,20 @@ export default function SubscriptionsPage() {
   };
 
   return (
-    <div className="animate-in fade-in duration-700 pb-20">
+    <div className="animate-in fade-in duration-700 pb-20 bg-transparent">
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">
+          <h2 className="text-3xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase transition-colors duration-300">
             Automations
           </h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1 italic">
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-1 italic transition-colors duration-300">
             Tagihan & Pemasukan Otomatis
           </p>
         </div>
         <button
           onClick={openModal}
-          className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg"
+          className="px-8 py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg active:scale-95"
         >
           + Add Automation
         </button>
@@ -142,18 +143,26 @@ export default function SubscriptionsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full p-20 text-center text-slate-300 font-black italic uppercase animate-pulse">
+          <div className="col-span-full p-20 text-center text-slate-300 dark:text-slate-800 font-black italic uppercase animate-pulse">
             Memuat Data...
           </div>
         ) : subs.length > 0 ? (
           subs.map((s) => (
             <div
               key={s.id}
-              className={`p-8 rounded-[2.5rem] border shadow-sm relative overflow-hidden transition-all ${s.is_active ? "bg-white border-slate-100 hover:border-blue-200" : "bg-slate-50 border-slate-200 opacity-60"}`}
+              className={`p-8 rounded-[2.5rem] border shadow-sm relative overflow-hidden transition-all duration-300 ${
+                s.is_active
+                  ? "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900"
+                  : "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 opacity-60"
+              }`}
             >
               <div className="flex justify-between items-start mb-6">
                 <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${s.type === "expense" ? "bg-rose-50" : "bg-emerald-50"}`}
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm transition-colors duration-300 ${
+                    s.type === "expense"
+                      ? "bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400"
+                      : "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                  }`}
                 >
                   {s.type === "income"
                     ? "💰"
@@ -163,13 +172,13 @@ export default function SubscriptionsPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => toggleActive(s.id, s.is_active)}
-                    className="text-[20px] hover:scale-110 transition-transform"
+                    className="text-[20px] hover:scale-120 transition-transform filter dark:drop-shadow-sm"
                   >
                     {s.is_active ? "⏸️" : "▶️"}
                   </button>
                   <button
                     onClick={() => handleDelete(s.id)}
-                    className="text-[20px] hover:scale-110 transition-transform"
+                    className="text-[20px] hover:scale-120 transition-transform filter dark:drop-shadow-sm"
                   >
                     🗑️
                   </button>
@@ -177,21 +186,21 @@ export default function SubscriptionsPage() {
               </div>
 
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1 transition-colors">
                   Tiap Tanggal {s.recurring_date}
                 </p>
-                <h3 className="text-xl font-black italic tracking-tight text-slate-900 truncate">
+                <h3 className="text-xl font-black italic tracking-tight text-slate-900 dark:text-white truncate transition-colors">
                   {s.description}
                 </h3>
                 <p
-                  className={`text-2xl font-black italic tracking-tighter mt-2 ${s.type === "expense" ? "text-rose-500" : "text-emerald-500"}`}
+                  className={`text-2xl font-black italic tracking-tighter mt-2 transition-colors ${s.type === "expense" ? "text-rose-500" : "text-emerald-500"}`}
                 >
                   {s.type === "expense" ? "-" : "+"} Rp{" "}
                   {s.amount.toLocaleString("id-ID")}
                 </p>
 
                 <div className="mt-4 flex items-center gap-2">
-                  <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-md">
+                  <span className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md transition-colors">
                     {s.fyntra_wallets?.icon} {s.fyntra_wallets?.wallet_name}
                   </span>
                 </div>
@@ -199,30 +208,32 @@ export default function SubscriptionsPage() {
             </div>
           ))
         ) : (
-          <div className="col-span-full p-20 text-center bg-white rounded-[3rem] border border-slate-100 shadow-sm text-slate-300 font-black italic uppercase">
+          <div className="col-span-full p-20 text-center bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm text-slate-300 dark:text-slate-700 font-black italic uppercase transition-all">
             Belum ada jadwal automasi.
           </div>
         )}
       </div>
 
-      {/* MODAL ADD AUTOMATION */}
+      {/* MODAL (DARK MODE READY) */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300">
-            <h3 className="text-2xl font-black italic mb-6">Set Automation</h3>
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 transition-all">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300 border border-transparent dark:border-slate-800">
+            <h3 className="text-2xl font-black italic mb-6 dark:text-white">
+              Set Automation
+            </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex p-1 bg-slate-100 rounded-2xl">
+              <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setType("expense")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${type === "expense" ? "bg-white text-rose-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${type === "expense" ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-400"}`}
                 >
                   Tagihan
                 </button>
                 <button
                   type="button"
                   onClick={() => setType("income")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${type === "income" ? "bg-white text-emerald-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${type === "income" ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm" : "text-slate-400"}`}
                 >
                   Pemasukan
                 </button>
@@ -235,7 +246,7 @@ export default function SubscriptionsPage() {
                   </label>
                   <select
                     required
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 outline-none"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold text-slate-800 dark:text-white outline-none"
                     value={recDate}
                     onChange={(e) => setRecDate(e.target.value)}
                   >
@@ -252,7 +263,7 @@ export default function SubscriptionsPage() {
                   </label>
                   <select
                     required
-                    className="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 outline-none truncate"
+                    className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold text-slate-800 dark:text-white outline-none truncate"
                     value={walletId}
                     onChange={(e) => setWalletId(e.target.value)}
                   >
@@ -269,7 +280,7 @@ export default function SubscriptionsPage() {
                 required
                 type="text"
                 placeholder="Nama Tagihan (Misal: Netflix)"
-                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white"
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
               />
@@ -277,7 +288,7 @@ export default function SubscriptionsPage() {
                 required
                 type="number"
                 placeholder="Nominal (Rp)"
-                className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -289,7 +300,7 @@ export default function SubscriptionsPage() {
                       key={c.name}
                       type="button"
                       onClick={() => setCategory(c.name)}
-                      className={`p-3 rounded-xl border text-[10px] font-black transition-all ${category === c.name ? "bg-blue-600 text-white" : "bg-white text-slate-400"}`}
+                      className={`p-3 rounded-xl border text-[10px] font-black transition-all ${category === c.name ? "bg-blue-600 text-white" : "bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-400"}`}
                     >
                       {c.icon}
                       <br />
@@ -303,14 +314,14 @@ export default function SubscriptionsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400 hover:text-slate-600 transition-colors"
+                  className="flex-1 font-black text-[10px] uppercase text-slate-400 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-600 transition-all"
+                  className="flex-1 py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg"
                 >
                   Simpan
                 </button>

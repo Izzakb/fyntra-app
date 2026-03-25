@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* 1. KUNCI UTAMA UNTUK TAILWIND V4 */
+/* Baris ini wajib ada agar dark:bg-slate-900 dkk bisa jalan pakai saklar */
+@custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 2. VARIABEL MODE TERANG */
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
 }
 
+/* 3. VARIABEL MODE GELAP (SAKLAR ON) */
+.dark {
+  --background: #020617; /* Navy Gelap */
+  --foreground: #f8fafc;
+  --card: #0f172a; /* Slate 900 */
+}
+
+/* 4. SETTINGAN DASAR BODY */
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply transition-colors duration-300 antialiased font-sans;
+}
+
+/* Biar card-card Bos otomatis dapet warna variabel ini */
+.fyntra-card {
+  background-color: var(--card);
+  @apply border border-slate-100 dark:border-slate-800 transition-all;
 }
