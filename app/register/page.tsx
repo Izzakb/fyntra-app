@@ -238,99 +238,108 @@ export default function RegisterPage() {
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-2">
               Security Key
             </label>
-            <div className="relative">
-              <input
-                required
-                type={showPassword ? "text" : "password"}
-                className={`w-full px-6 py-4 bg-slate-800/40 border rounded-2xl focus:ring-2 text-white outline-none transition-all placeholder:text-slate-600 font-medium text-sm pr-12 ${
-                  errorMsg
-                    ? "border-red-500/50 focus:ring-red-500 bg-red-500/5"
-                    : "border-slate-700/50 focus:ring-blue-500"
-                }`}
-                placeholder="••••••••"
-                value={password}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errorMsg) setErrorMsg("");
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-5 top-1/2 -translate-y-1/2 transition-colors ${
-                  errorMsg
-                    ? "text-red-400 hover:text-red-300"
-                    : "text-slate-500 hover:text-white"
-                }`}
-              >
-                {showPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-                    <line x1="2" x2="22" y1="2" y2="22" />
-                  </svg>
-                )}
-              </button>
-            </div>
-            {/* HINT PASSWORD DINAMIS */}
-            <AnimatePresence>
-              {isPasswordFocused && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden px-2"
+
+            {/* KUNCI SMOOTH-NYA DI SINI: Bungkus input & hint tanpa gap */}
+            <div className="flex flex-col">
+              <div className="relative">
+                <input
+                  required
+                  type={showPassword ? "text" : "password"}
+                  className={`w-full px-6 py-4 bg-slate-800/40 border rounded-2xl focus:ring-2 text-white outline-none transition-all placeholder:text-slate-600 font-medium text-sm pr-12 ${
+                    errorMsg
+                      ? "border-red-500/50 focus:ring-red-500 bg-red-500/5"
+                      : "border-slate-700/50 focus:ring-blue-500"
+                  }`}
+                  placeholder="••••••••"
+                  value={password}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={`absolute right-5 top-1/2 -translate-y-1/2 transition-colors ${
+                    errorMsg
+                      ? "text-red-400 hover:text-red-300"
+                      : "text-slate-500 hover:text-white"
+                  }`}
                 >
-                  <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1.5 mt-1">
+                  {showPassword ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
+                      width="18"
+                      height="18"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="2.5"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="text-blue-500"
                     >
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 16v-4" />
-                      <path d="M12 8h.01" />
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
                     </svg>
-                    Minimum 6 characters or numbers.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                      <line x1="2" x2="22" y1="2" y2="22" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+
+              {/* HINT PASSWORD DINAMIS */}
+              <AnimatePresence>
+                {isPasswordFocused && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden px-2"
+                  >
+                    {/* Padding top (pt-2) menggantikan efek gap yang bikin patah */}
+                    <div className="pt-2 pb-1">
+                      <p className="text-[10px] font-bold text-slate-500 flex items-center gap-1.5">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-blue-500"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4" />
+                          <path d="M12 8h.01" />
+                        </svg>
+                        Minimum 6 characters or numbers.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
 
           {/* CONFIRM PASSWORD */}
