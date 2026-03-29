@@ -6,18 +6,6 @@ import { toast } from "sonner";
 import { useFyntra } from "@/context/FyntraContext";
 import { useRouter } from "next/navigation"; // 💡 TAMBAHKAN ROUTER
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 export default function SettingsPage() {
   const { refreshGlobalData } = useFyntra();
   const router = useRouter(); // 💡 INISIALISASI ROUTER
@@ -93,17 +81,17 @@ export default function SettingsPage() {
   if (loading)
     return (
       <div
-        className={`${inter.className} max-w-2xl p-10 font-bold text-slate-400 uppercase tracking-widest text-xs bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl rounded-[3rem] border border-slate-100 dark:border-slate-800/50 text-center`}
+        className={`max-w-2xl p-10 font-bold text-slate-400 uppercase tracking-widest text-xs bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl rounded-[3rem] border border-slate-100 dark:border-slate-800/50 text-center`}
       >
         FETCHING IDENTITY...
       </div>
     );
 
   return (
-    <div className={`${inter.className} max-w-2xl pb-20 bg-transparent`}>
+    <div className={`max-w-2xl pb-20 bg-transparent`}>
       <header className="mb-10">
         <h1
-          className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
+          className={`font-space-grotesk text-4xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
         >
           Profile Settings
         </h1>

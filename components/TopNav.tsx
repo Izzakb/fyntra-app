@@ -3,19 +3,6 @@ import { useFyntra } from "@/context/FyntraContext";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle"; // JANGAN LUPA IMPORT INI BOS
 
-// FONT PREMIUM: Inter & Space Grotesk
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 export default function TopNav() {
   const { fullName, avatarUrl, loadingGlobal } = useFyntra();
   const [dateStr, setDateStr] = useState("");
@@ -33,7 +20,7 @@ export default function TopNav() {
 
   return (
     <header
-      className={`${inter.className} sticky top-0 z-40 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800/50 px-10 py-5 flex justify-between items-center transition-all duration-300`}
+      className={`sticky top-0 z-40 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800/50 px-10 py-5 flex justify-between items-center transition-all duration-300`}
     >
       <div className="flex items-center gap-4">
         {loadingGlobal ? (
@@ -47,7 +34,7 @@ export default function TopNav() {
         ) : (
           /* Background Inisial Biru di Dark Mode */
           <div
-            className={`${spaceGrotesk.className} w-10 h-10 bg-slate-900 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-900/20 transition-all duration-300`}
+            className={`font-space-grotesk w-10 h-10 bg-slate-900 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-900/20 transition-all duration-300`}
           >
             {fullName ? fullName.charAt(0).toUpperCase() : "F"}
           </div>
@@ -61,7 +48,7 @@ export default function TopNav() {
             <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded animate-pulse mt-1"></div>
           ) : (
             <p
-              className={`${spaceGrotesk.className} text-sm font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-300 mt-1 leading-none`}
+              className={`font-space-grotesk text-sm font-bold text-slate-900 dark:text-white tracking-tight transition-colors duration-300 mt-1 leading-none`}
             >
               {fullName ? fullName.split(" ")[0] : "User"}
             </p>

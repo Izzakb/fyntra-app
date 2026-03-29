@@ -5,19 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { motion, Variants } from "framer-motion";
 
-// FONT PREMIUM: Inter & Space Grotesk
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // --- SMOOTH & SIMPLE CONFIG ---
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -70,7 +57,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div
-      className={`${inter.className} min-h-screen bg-[#020617] flex items-center justify-center px-6 relative overflow-hidden`}
+      className={`min-h-screen bg-[#020617] flex items-center justify-center px-6 relative overflow-hidden`}
     >
       {/* GLOW BIRU MEWAH - Smooth breathing animation */}
       <motion.div
@@ -87,7 +74,7 @@ export default function ForgotPasswordPage() {
       >
         <div className="text-center mb-10">
           <h1
-            className={`${spaceGrotesk.className} text-2xl font-bold tracking-tight text-white uppercase`}
+            className={`font-space-grotesk text-2xl font-bold tracking-tight text-white uppercase`}
           >
             Recovery <span className="text-blue-500">Access</span>
           </h1>

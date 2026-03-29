@@ -4,18 +4,6 @@ import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
 import { toast } from "sonner";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
 const FormattedMoney = ({
   amount,
@@ -399,13 +387,13 @@ export default function InvestmentsPage() {
 
   return (
     <div
-      className={`${inter.className} pb-20 bg-transparent transition-all px-4 md:px-0`}
+      className={`pb-20 bg-transparent transition-all px-4 md:px-0`}
     >
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
         <div className="w-full lg:w-auto">
           <h2
-            className={`${spaceGrotesk.className} text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
+            className={`font-space-grotesk text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
           >
             Portfolio & Assets
           </h2>
@@ -469,7 +457,7 @@ export default function InvestmentsPage() {
               Total Market Value
             </p>
             <h2
-              className={`${spaceGrotesk.className} text-3xl md:text-5xl font-bold tracking-tight break-words`}
+              className={`font-space-grotesk text-3xl md:text-5xl font-bold tracking-tight break-words`}
             >
               <FormattedMoney amount={portfolioStats.totalValue} />
             </h2>
@@ -490,7 +478,7 @@ export default function InvestmentsPage() {
               Total Return
             </p>
             <p
-              className={`${spaceGrotesk.className} text-lg md:text-xl font-bold`}
+              className={`font-space-grotesk text-lg md:text-xl font-bold`}
             >
               <FormattedMoney amount={portfolioStats.pnl} showSign={true} /> (
               {portfolioStats.pnl >= 0 ? "+" : ""}
@@ -529,7 +517,7 @@ export default function InvestmentsPage() {
                     </div>
                     <div>
                       <h3
-                        className={`${spaceGrotesk.className} font-bold text-base md:text-lg text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[120px] sm:max-w-none`}
+                        className={`font-space-grotesk font-bold text-base md:text-lg text-slate-900 dark:text-white uppercase tracking-tight truncate max-w-[120px] sm:max-w-none`}
                       >
                         {a.asset_name}
                       </h3>
@@ -608,7 +596,7 @@ export default function InvestmentsPage() {
                     </span>
                     <div className="text-right">
                       <span
-                        className={`${spaceGrotesk.className} block text-lg md:text-xl font-bold dark:text-white leading-tight`}
+                        className={`font-space-grotesk block text-lg md:text-xl font-bold dark:text-white leading-tight`}
                       >
                         <FormattedMoney amount={marketValue} />
                       </span>
@@ -636,7 +624,7 @@ export default function InvestmentsPage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-6 md:p-8 rounded-[2.5rem] shadow-2xl max-h-[95vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative">
             <h3
-              className={`${spaceGrotesk.className} text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
+              className={`font-space-grotesk text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
             >
               {isEditing ? "Edit Asset" : "Add Asset"}
             </h3>

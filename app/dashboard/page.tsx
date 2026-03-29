@@ -14,18 +14,6 @@ import {
 } from "recharts";
 import AiAdvisor from "@/components/AiAdvisor";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // 💡 MAP LOGO SVG (DIAMBIL DARI WALLET PAGE)
 const ICONS_MAP: Record<string, React.ReactNode> = {
   Card: (
@@ -350,7 +338,7 @@ const CustomChartTooltip = ({ active, payload }: any) => {
           {isIncome ? "Total Income" : "Total Expense"}
         </p>
         <p
-          className={`${spaceGrotesk.className} font-bold text-xl ${isIncome ? "text-emerald-400" : "text-rose-400"}`}
+          className={`font-space-grotesk font-bold text-xl ${isIncome ? "text-emerald-400" : "text-rose-400"}`}
         >
           <FormattedMoney amount={data.t} />
         </p>
@@ -563,7 +551,7 @@ export default function DashboardHomePage() {
   if (loadingGlobal)
     return (
       <div
-        className={`${inter.className} p-10 font-bold italic text-slate-300 dark:text-slate-700`}
+        className={`p-10 font-bold italic text-slate-300 dark:text-slate-700`}
       >
         {" "}
         Syncing Ledger...{" "}
@@ -572,7 +560,7 @@ export default function DashboardHomePage() {
 
   return (
     <div
-      className={`${inter.className} bg-transparent min-h-screen transition-colors duration-300 space-y-10 pb-20`}
+      className={`bg-transparent min-h-screen transition-colors duration-300 space-y-10 pb-20`}
     >
       {/* 2. HEADER WEALTH DASHBOARD */}
       <div className="bg-slate-900 dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 md:p-12 rounded-[3.5rem] border border-transparent dark:border-slate-800/50 text-white shadow-2xl relative overflow-hidden transition-all duration-300">
@@ -586,7 +574,7 @@ export default function DashboardHomePage() {
                 Liquid Cash (Siap Pakai){" "}
               </p>
               <h2
-                className={`${spaceGrotesk.className} text-5xl md:text-6xl font-bold tracking-tight`}
+                className={`font-space-grotesk text-5xl md:text-6xl font-bold tracking-tight`}
               >
                 {" "}
                 <FormattedMoney amount={balance} />{" "}
@@ -608,7 +596,7 @@ export default function DashboardHomePage() {
                 Total Investment{" "}
               </p>
               <p
-                className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold`}
+                className={`font-space-grotesk text-xl md:text-2xl font-bold`}
               >
                 {" "}
                 <FormattedMoney amount={totalInvestment} />{" "}
@@ -621,7 +609,7 @@ export default function DashboardHomePage() {
                 Net Worth (Master Asset){" "}
               </p>
               <p
-                className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold text-emerald-400 dark:text-emerald-300`}
+                className={`font-space-grotesk text-xl md:text-2xl font-bold text-emerald-400 dark:text-emerald-300`}
               >
                 {" "}
                 <FormattedMoney amount={netWorth} />{" "}
@@ -647,7 +635,7 @@ export default function DashboardHomePage() {
               {w.wallet_name}
             </p>
             <p
-              className={`${spaceGrotesk.className} font-bold text-xl text-slate-900 dark:text-white tracking-tight`}
+              className={`font-space-grotesk font-bold text-xl text-slate-900 dark:text-white tracking-tight`}
             >
               {" "}
               <FormattedMoney amount={w.balance} />{" "}
@@ -671,7 +659,7 @@ export default function DashboardHomePage() {
             Income (Month){" "}
           </p>
           <p
-            className={`${spaceGrotesk.className} text-2xl font-bold text-emerald-500`}
+            className={`font-space-grotesk text-2xl font-bold text-emerald-500`}
           >
             {" "}
             <FormattedMoney amount={monthlyStats.income} showSign={true} />{" "}
@@ -683,7 +671,7 @@ export default function DashboardHomePage() {
             Expense (Month){" "}
           </p>
           <p
-            className={`${spaceGrotesk.className} text-2xl font-bold text-rose-500`}
+            className={`font-space-grotesk text-2xl font-bold text-rose-500`}
           >
             {" "}
             <FormattedMoney
@@ -698,7 +686,7 @@ export default function DashboardHomePage() {
             Cashflow{" "}
           </p>
           <p
-            className={`${spaceGrotesk.className} text-2xl font-bold ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
+            className={`font-space-grotesk text-2xl font-bold ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
           >
             {" "}
             <FormattedMoney amount={monthlyStats.net} />{" "}
@@ -740,7 +728,7 @@ export default function DashboardHomePage() {
                         {g.goal_name}{" "}
                       </p>{" "}
                       <p
-                        className={`${spaceGrotesk.className} font-bold text-blue-600 dark:text-blue-400 text-sm`}
+                        className={`font-space-grotesk font-bold text-blue-600 dark:text-blue-400 text-sm`}
                       >
                         {" "}
                         {progress}%{" "}
@@ -867,7 +855,7 @@ export default function DashboardHomePage() {
                 </div>{" "}
               </div>{" "}
               <p
-                className={`${spaceGrotesk.className} font-bold text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
+                className={`font-space-grotesk font-bold text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
               >
                 {" "}
                 <FormattedMoney
@@ -885,7 +873,7 @@ export default function DashboardHomePage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
             <h3
-              className={`${spaceGrotesk.className} text-xl font-bold mb-4 dark:text-white text-slate-900 uppercase`}
+              className={`font-space-grotesk text-xl font-bold mb-4 dark:text-white text-slate-900 uppercase`}
             >
               {" "}
               Add Transaction{" "}

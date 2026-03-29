@@ -4,18 +4,6 @@ import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
 import { toast } from "sonner";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // SVG PREMIUM KATEGORI (Termasuk icon "Semua")
 const CATEGORIES = [
   {
@@ -307,12 +295,12 @@ export default function TransactionsPage() {
 
   return (
     <div
-      className={`${inter.className} animate-in fade-in duration-700 pb-20 bg-transparent`}
+      className={`animate-in fade-in duration-700 pb-20 bg-transparent`}
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h2
-            className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
+            className={`font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase`}
           >
             Transaction Audit
           </h2>
@@ -415,7 +403,7 @@ export default function TransactionsPage() {
                 {/* NOMINAL & ACTIONS */}
                 <div className="text-right flex flex-col items-end mt-4 md:mt-0">
                   <p
-                    className={`${spaceGrotesk.className} text-lg font-bold tracking-tight ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
+                    className={`font-space-grotesk text-lg font-bold tracking-tight ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
                   >
                     <FormattedMoney
                       amount={t.type === "income" ? t.amount : t.amount * -1}
@@ -452,7 +440,7 @@ export default function TransactionsPage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
             <h3
-              className={`${spaceGrotesk.className} text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
+              className={`font-space-grotesk text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
             >
               Edit Transaction
             </h3>

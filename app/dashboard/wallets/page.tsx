@@ -4,18 +4,6 @@ import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
 import { toast } from "sonner";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
 const FormattedMoney = ({
   amount,
@@ -310,12 +298,12 @@ export default function ManageWalletsPage() {
 
   return (
     <div
-      className={`${inter.className} animate-in fade-in duration-700 pb-20 bg-transparent transition-all`}
+      className={`animate-in fade-in duration-700 pb-20 bg-transparent transition-all`}
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h2
-            className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
+            className={`font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
           >
             Manage Wallets
           </h2>
@@ -453,7 +441,7 @@ export default function ManageWalletsPage() {
                   {w.wallet_name}
                 </p>
                 <h3
-                  className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight transition-colors`}
+                  className={`font-space-grotesk text-3xl font-bold tracking-tight transition-colors`}
                 >
                   <FormattedMoney amount={w.balance} />
                 </h3>
@@ -477,7 +465,7 @@ export default function ManageWalletsPage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
             <h3
-              className={`${spaceGrotesk.className} text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase transition-colors`}
+              className={`font-space-grotesk text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase transition-colors`}
             >
               {isEditing ? "Edit Wallet" : "Add New Wallet"}
             </h3>
