@@ -26,6 +26,142 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["500", "700"],
 });
 
+// 💡 MAP LOGO SVG (DIAMBIL DARI WALLET PAGE)
+const ICONS_MAP: Record<string, React.ReactNode> = {
+  Card: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="14" x="2" y="5" rx="2" />
+      <line x1="2" x2="22" y1="10" y2="10" />
+    </svg>
+  ),
+  Bank: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="16" height="16" x="4" y="4" rx="2" />
+      <path d="M12 16v-6" />
+      <path d="M8 16v-6" />
+      <path d="M16 16v-6" />
+      <path d="M8 10h8" />
+    </svg>
+  ),
+  Cash: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="12" x="2" y="6" rx="2" />
+      <circle cx="12" cy="12" r="2" />
+      <path d="M6 12h.01M18 12h.01" />
+    </svg>
+  ),
+  "E-Wallet": (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+      <line x1="12" x2="12.01" y1="18" y2="18" />
+    </svg>
+  ),
+  Piggy: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.5-1 2-1.5L20 12V6c0-.6-.4-1-1-1Z" />
+      <path d="M2 9v1c0 1.1.9 2 2 2h1" />
+      <path d="M16 11h.01" />
+    </svg>
+  ),
+  Coin: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M16 12a4 4 0 0 0-8 0" />
+    </svg>
+  ),
+  Briefcase: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  ),
+  Rocket: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </svg>
+  ),
+};
+
+// 💡 HELPER RENDER LOGO (BIAR MUNCUL GAMBAR BUKAN TULISAN)
+const renderWalletIcon = (iconVal: string) => {
+  return ICONS_MAP[iconVal] || <span className="text-xl">{iconVal}</span>;
+};
+
 // SVG PREMIUM KATEGORI
 const CATEGORIES = [
   {
@@ -163,7 +299,6 @@ const CATEGORIES = [
   },
 ];
 
-// 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
 const FormattedMoney = ({
   amount,
   prefix = "Rp ",
@@ -176,40 +311,34 @@ const FormattedMoney = ({
   const safeAmount = amount || 0;
   const isNegative = safeAmount < 0;
   const absAmount = Math.abs(safeAmount);
-
   const formattedRaw = absAmount.toLocaleString("id-ID", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 3,
   });
-
   const parts = formattedRaw.split(",");
   const integerPart = parts[0];
   const decimalPart = parts[1];
-
   let sign = "";
   if (showSign) {
     sign = isNegative ? "-" : "+";
   } else if (isNegative) {
     sign = "-";
   }
-
   return (
     <span>
-      {sign} {prefix}
-      {integerPart}
+      {" "}
+      {sign} {prefix} {integerPart}{" "}
       {decimalPart && (
         <span className="text-[0.6em] opacity-60 ml-[1px]">,{decimalPart}</span>
-      )}
+      )}{" "}
     </span>
   );
 };
 
-// 💡 KOMPONEN CUSTOM TOOLTIP UNTUK CHART
 const CustomChartTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const isIncome = data.name === "In";
-
     return (
       <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 p-4 rounded-2xl shadow-2xl shadow-black/50">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
@@ -244,7 +373,6 @@ export default function DashboardHomePage() {
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
-
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -253,12 +381,10 @@ export default function DashboardHomePage() {
   const [transactionAmount, setTransactionAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Makanan");
   const [selectedWalletId, setSelectedWalletId] = useState("");
-
   const [magicText, setMagicText] = useState("");
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
-  // 💡 AUTO-SELECT DEFAULT WALLET: Kalau wallets sudah load, langsung isi wallet pertama
   useEffect(() => {
     if (wallets && wallets.length > 0 && !selectedWalletId) {
       setSelectedWalletId(wallets[0].id);
@@ -402,20 +528,16 @@ export default function DashboardHomePage() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // 💡 VALIDASI KEAMANAN: Memastikan Wallet Tidak Kosong
     if (!selectedWalletId) {
       toast.error("Validasi Gagal", {
         description: "Pilih Source Wallet terlebih dahulu, Bos!",
       });
       return;
     }
-
     setLoading(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
     const { error } = await supabase.rpc("process_fyntra_transaction", {
       p_user_id: user?.id,
       p_wallet_id: selectedWalletId,
@@ -424,7 +546,6 @@ export default function DashboardHomePage() {
       p_category: transactionType === "income" ? "Income" : selectedCategory,
       p_description: transactionName,
     });
-
     if (error) {
       toast.error("Gagal Simpan", { description: error.message });
     } else {
@@ -432,8 +553,6 @@ export default function DashboardHomePage() {
       setShowTransactionModal(false);
       refreshGlobalData();
       fetchData();
-
-      // 💡 RESET FORM
       setTransactionName("");
       setTransactionAmount("");
       setMagicText("");
@@ -446,7 +565,8 @@ export default function DashboardHomePage() {
       <div
         className={`${inter.className} p-10 font-bold italic text-slate-300 dark:text-slate-700`}
       >
-        Syncing Ledger...
+        {" "}
+        Syncing Ledger...{" "}
       </div>
     );
 
@@ -457,51 +577,59 @@ export default function DashboardHomePage() {
       {/* 2. HEADER WEALTH DASHBOARD */}
       <div className="bg-slate-900 dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 md:p-12 rounded-[3.5rem] border border-transparent dark:border-slate-800/50 text-white shadow-2xl relative overflow-hidden transition-all duration-300">
         <div className="absolute top-[-30%] left-[-10%] w-[60%] h-[60%] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
-
         <div className="relative z-10 flex flex-col gap-8">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div>
+              {" "}
               <p className="text-slate-400 dark:text-blue-300 text-[10px] font-bold uppercase tracking-[0.5em] mb-3">
-                Liquid Cash (Siap Pakai)
+                {" "}
+                Liquid Cash (Siap Pakai){" "}
               </p>
               <h2
                 className={`${spaceGrotesk.className} text-5xl md:text-6xl font-bold tracking-tight`}
               >
-                <FormattedMoney amount={balance} />
-              </h2>
+                {" "}
+                <FormattedMoney amount={balance} />{" "}
+              </h2>{" "}
             </div>
             <button
               onClick={() => setShowTransactionModal(true)}
               className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/30 whitespace-nowrap hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all"
             >
-              + Add Transaction
-            </button>
+              {" "}
+              + Add Transaction{" "}
+            </button>{" "}
           </div>
-
           <div className="grid grid-cols-2 gap-4 border-t border-slate-800 dark:border-slate-700/50 pt-6 mt-2">
             <div>
+              {" "}
               <p className="text-slate-400 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">
-                Total Investment
+                {" "}
+                Total Investment{" "}
               </p>
               <p
                 className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold`}
               >
-                <FormattedMoney amount={totalInvestment} />
-              </p>
+                {" "}
+                <FormattedMoney amount={totalInvestment} />{" "}
+              </p>{" "}
             </div>
             <div>
+              {" "}
               <p className="text-emerald-400 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-widest mb-1">
-                Net Worth (Master Asset)
+                {" "}
+                Net Worth (Master Asset){" "}
               </p>
               <p
                 className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold text-emerald-400 dark:text-emerald-300`}
               >
-                <FormattedMoney amount={netWorth} />
-              </p>
-            </div>
-          </div>
+                {" "}
+                <FormattedMoney amount={netWorth} />{" "}
+              </p>{" "}
+            </div>{" "}
+          </div>{" "}
         </div>
-        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl z-0 pointer-events-none"></div>
+        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl z-0 pointer-events-none"></div>{" "}
       </div>
 
       {/* DOMPET LIST */}
@@ -511,16 +639,21 @@ export default function DashboardHomePage() {
             key={w.id}
             className="min-w-[220px] bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300"
           >
+            {/* 💡 FIX: RENDER LOGO SVG DISINI (renderWalletIcon) */}
             <p className="font-bold text-xs uppercase text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
-              <span className="text-lg">{w.icon}</span> {w.wallet_name}
+              <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 shadow-sm">
+                {renderWalletIcon(w.icon)}
+              </span>
+              {w.wallet_name}
             </p>
             <p
               className={`${spaceGrotesk.className} font-bold text-xl text-slate-900 dark:text-white tracking-tight`}
             >
-              <FormattedMoney amount={w.balance} />
-            </p>
+              {" "}
+              <FormattedMoney amount={w.balance} />{" "}
+            </p>{" "}
           </div>
-        ))}
+        ))}{" "}
       </div>
 
       <AiAdvisor
@@ -534,52 +667,61 @@ export default function DashboardHomePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Income (Month)
+            {" "}
+            Income (Month){" "}
           </p>
           <p
             className={`${spaceGrotesk.className} text-2xl font-bold text-emerald-500`}
           >
-            <FormattedMoney amount={monthlyStats.income} showSign={true} />
-          </p>
+            {" "}
+            <FormattedMoney amount={monthlyStats.income} showSign={true} />{" "}
+          </p>{" "}
         </div>
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Expense (Month)
+            {" "}
+            Expense (Month){" "}
           </p>
           <p
             className={`${spaceGrotesk.className} text-2xl font-bold text-rose-500`}
           >
+            {" "}
             <FormattedMoney
               amount={monthlyStats.expense * -1}
               showSign={true}
-            />
-          </p>
+            />{" "}
+          </p>{" "}
         </div>
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-            Cashflow
+            {" "}
+            Cashflow{" "}
           </p>
           <p
             className={`${spaceGrotesk.className} text-2xl font-bold ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
           >
-            <FormattedMoney amount={monthlyStats.net} />
-          </p>
-        </div>
+            {" "}
+            <FormattedMoney amount={monthlyStats.net} />{" "}
+          </p>{" "}
+        </div>{" "}
       </div>
 
       {/* GOALS & CHART */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-80 flex flex-col transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
+            {" "}
             <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
-              Future Goals
+              {" "}
+              Future Goals{" "}
             </h3>
             <Link
               href="/dashboard/goals"
               className="text-[9px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors"
             >
-              Detail →
-            </Link>
+              {" "}
+              Detail →{" "}
+            </Link>{" "}
           </div>
           <div className="space-y-6 overflow-y-auto pr-2 custom-scrollbar">
             {goals.length > 0 ? (
@@ -590,81 +732,96 @@ export default function DashboardHomePage() {
                 ).toFixed(0);
                 return (
                   <div key={g.id} className="space-y-3">
+                    {" "}
                     <div className="flex justify-between items-end">
+                      {" "}
                       <p className="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase truncate max-w-[150px]">
-                        {g.goal_name}
-                      </p>
+                        {" "}
+                        {g.goal_name}{" "}
+                      </p>{" "}
                       <p
                         className={`${spaceGrotesk.className} font-bold text-blue-600 dark:text-blue-400 text-sm`}
                       >
-                        {progress}%
-                      </p>
-                    </div>
+                        {" "}
+                        {progress}%{" "}
+                      </p>{" "}
+                    </div>{" "}
                     <div className="w-full h-3 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden">
+                      {" "}
                       <div
                         className="h-full bg-blue-600 transition-all duration-1000"
                         style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
+                      ></div>{" "}
+                    </div>{" "}
                   </div>
                 );
               })
             ) : (
               <p className="text-center text-slate-500 font-bold text-[10px] uppercase mt-10">
-                No goals yet.
+                {" "}
+                No goals yet.{" "}
               </p>
-            )}
-          </div>
+            )}{" "}
+          </div>{" "}
         </div>
-
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-80 flex flex-col transition-colors duration-300">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-6 text-center w-full">
-            Cashflow Chart
+            {" "}
+            Cashflow Chart{" "}
           </h3>
           <div className="h-full w-full">
+            {" "}
             <ResponsiveContainer width="100%" height="100%">
+              {" "}
               <BarChart
                 data={[
                   { name: "In", t: monthlyStats.income, c: "#10b981" },
                   { name: "Out", t: monthlyStats.expense, c: "#f43f5e" },
                 ]}
               >
+                {" "}
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fontWeight: "bold", fill: "#64748b" }}
-                />
+                />{" "}
                 <Tooltip
                   content={<CustomChartTooltip />}
                   cursor={{ fill: "transparent" }}
-                />
+                />{" "}
                 <Bar dataKey="t" radius={[6, 6, 6, 6]} barSize={45}>
+                  {" "}
                   {[{ c: "#10b981" }, { c: "#f43f5e" }].map((e, i) => (
                     <Cell key={i} fill={e.c} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+                  ))}{" "}
+                </Bar>{" "}
+              </BarChart>{" "}
+            </ResponsiveContainer>{" "}
+          </div>{" "}
+        </div>{" "}
       </div>
 
       {/* RECENT ACTIVITY */}
       <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
         <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-8">
-          Recent Activity
+          {" "}
+          Recent Activity{" "}
         </h3>
         <div className="space-y-4">
+          {" "}
           {transactions.slice(0, 5).map((t) => (
             <div
               key={t.id}
               className="flex justify-between items-center p-5 bg-slate-50/50 dark:bg-slate-800/30 rounded-[2rem] border border-slate-50 dark:border-slate-800/50 transition-colors"
             >
+              {" "}
               <div className="flex items-center gap-5">
+                {" "}
                 <div
                   className={`w-12 h-12 rounded-2xl flex items-center justify-center ${t.type === "income" ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border dark:border-emerald-500/20" : "bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 dark:border dark:border-rose-500/20"}`}
                 >
+                  {" "}
                   {t.type === "income" ? (
                     <svg
                       width="20"
@@ -680,58 +837,66 @@ export default function DashboardHomePage() {
                       <path d="m19 12-7 7-7-7" />
                     </svg>
                   ) : (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 19V5" />
-                      <path d="m5 12 7-7 7 7" />
-                    </svg>
-                  )}
-                </div>
+                    CATEGORIES.find((c) => c.name === t.category)?.icon || (
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 19V5" />
+                        <path d="m5 12 7-7 7 7" />
+                      </svg>
+                    )
+                  )}{" "}
+                </div>{" "}
                 <div>
+                  {" "}
                   <p className="font-bold text-sm text-slate-800 dark:text-slate-200">
-                    {t.description}
-                  </p>
+                    {" "}
+                    {t.description}{" "}
+                  </p>{" "}
                   <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-0.5">
-                    {t.category}
-                  </p>
-                </div>
-              </div>
+                    {" "}
+                    {t.category}{" "}
+                  </p>{" "}
+                </div>{" "}
+              </div>{" "}
               <p
                 className={`${spaceGrotesk.className} font-bold text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
               >
+                {" "}
                 <FormattedMoney
                   amount={t.type === "income" ? t.amount : t.amount * -1}
                   showSign={true}
-                />
-              </p>
+                />{" "}
+              </p>{" "}
             </div>
-          ))}
-        </div>
+          ))}{" "}
+        </div>{" "}
       </div>
 
-      {/* MODAL TRANSAKSI (TANPA SCROLLBAR) */}
+      {/* MODAL TRANSAKSI */}
       {showTransactionModal && (
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
             <h3
               className={`${spaceGrotesk.className} text-xl font-bold mb-4 dark:text-white text-slate-900 uppercase`}
             >
-              Add Transaction
+              {" "}
+              Add Transaction{" "}
             </h3>
-
             {/* MAGIC BOX */}
             <div className="mb-5 p-[1px] rounded-3xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-900/20">
               <div className="bg-white dark:bg-[#060b1a] rounded-[1.4rem] p-4 flex flex-col gap-4 transition-colors">
                 <div className="flex items-center justify-between">
+                  {" "}
                   <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    {" "}
                     <svg
                       width="14"
                       height="14"
@@ -743,11 +908,13 @@ export default function DashboardHomePage() {
                       strokeLinejoin="round"
                     >
                       <path d="m12 3-1.9 5.8a2 2 0 0 1-1.29 1.29L3 12l5.8 1.9a2 2 0 0 1 1.29 1.29L12 21l1.9-5.8a2 2 0 0 1 1.29-1.29L21 12l-5.8-1.9a2 2 0 0 1-1.29-1.29L12 3Z" />
-                    </svg>
-                    AI Magic Input
-                  </span>
+                    </svg>{" "}
+                    AI Magic Input{" "}
+                  </span>{" "}
                   <div className="flex gap-2">
+                    {" "}
                     <label className="cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-2.5 rounded-xl text-slate-600 dark:text-slate-300 transition-colors">
+                      {" "}
                       <svg
                         width="16"
                         height="16"
@@ -760,19 +927,20 @@ export default function DashboardHomePage() {
                       >
                         <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
                         <circle cx="12" cy="13" r="3" />
-                      </svg>
+                      </svg>{" "}
                       <input
                         type="file"
                         accept="image/*"
                         className="hidden"
                         onChange={handleFileUpload}
-                      />
-                    </label>
+                      />{" "}
+                    </label>{" "}
                     <button
                       type="button"
                       onClick={startListening}
                       className={`p-2.5 rounded-xl transition-all ${isListening ? "bg-rose-500/10 text-rose-500 animate-pulse border border-rose-500/20" : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"}`}
                     >
+                      {" "}
                       <svg
                         width="16"
                         height="16"
@@ -786,11 +954,12 @@ export default function DashboardHomePage() {
                         <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                         <line x1="12" x2="12" y1="19" y2="22" />
-                      </svg>
-                    </button>
-                  </div>
+                      </svg>{" "}
+                    </button>{" "}
+                  </div>{" "}
                 </div>
                 <div className="flex gap-2">
+                  {" "}
                   <input
                     type="text"
                     placeholder="E.g: Kopi Starbucks 45rb"
@@ -801,41 +970,44 @@ export default function DashboardHomePage() {
                       e.key === "Enter" &&
                       (e.preventDefault(), handleMagicProcess())
                     }
-                  />
+                  />{" "}
                   <button
                     type="button"
                     onClick={() => handleMagicProcess()}
                     disabled={isMagicLoading}
                     className="bg-slate-900 dark:bg-blue-600 text-white px-5 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-blue-500 transition-colors"
                   >
-                    {isMagicLoading ? "..." : "Gas"}
-                  </button>
-                </div>
-              </div>
+                    {" "}
+                    {isMagicLoading ? "..." : "Gas"}{" "}
+                  </button>{" "}
+                </div>{" "}
+              </div>{" "}
             </div>
-
-            {/* FORM */}
             <form onSubmit={handleSubmitTransaction} className="space-y-4">
               <div className="flex p-1 bg-slate-100 dark:bg-slate-800/50 rounded-2xl transition-colors">
+                {" "}
                 <button
                   type="button"
                   onClick={() => setTransactionType("expense")}
                   className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${transactionType === "expense" ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-500"}`}
                 >
-                  Expense
-                </button>
+                  {" "}
+                  Expense{" "}
+                </button>{" "}
                 <button
                   type="button"
                   onClick={() => setTransactionType("income")}
                   className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${transactionType === "income" ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm" : "text-slate-500"}`}
                 >
-                  Income
-                </button>
+                  {" "}
+                  Income{" "}
+                </button>{" "}
               </div>
-
               <div>
+                {" "}
                 <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
-                  Source Wallet
+                  {" "}
+                  Source Wallet{" "}
                 </label>
                 <select
                   required
@@ -843,18 +1015,15 @@ export default function DashboardHomePage() {
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
                 >
-                  {/* Kalau butuh placeholder, buka comment di bawah, 
-                      tapi karena otomatis kepilih dompet pertama, ini bisa di-skip */}
-                  {/* <option value="" disabled>Select Wallet...</option> */}
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
+                      {" "}
                       {w.icon} {w.wallet_name} (Rp{" "}
-                      {w.balance.toLocaleString("id-ID")})
+                      {w.balance.toLocaleString("id-ID")}){" "}
                     </option>
                   ))}
-                </select>
+                </select>{" "}
               </div>
-
               <input
                 required
                 type="text"
@@ -871,9 +1040,9 @@ export default function DashboardHomePage() {
                 value={transactionAmount}
                 onChange={(e) => setTransactionAmount(e.target.value)}
               />
-
               {transactionType === "expense" && (
                 <div className="grid grid-cols-3 gap-2 pt-1">
+                  {" "}
                   {CATEGORIES.filter((c) => c.name !== "Income").map((c) => (
                     <button
                       key={c.name}
@@ -881,6 +1050,7 @@ export default function DashboardHomePage() {
                       onClick={() => setSelectedCategory(c.name)}
                       className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-2 text-[8px] font-bold uppercase tracking-widest transition-all ${selectedCategory === c.name ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-900/20" : "bg-white dark:bg-slate-800/50 dark:border-slate-700/50 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
+                      {" "}
                       <span
                         className={
                           selectedCategory === c.name
@@ -888,29 +1058,32 @@ export default function DashboardHomePage() {
                             : "text-slate-400"
                         }
                       >
-                        {c.icon}
-                      </span>
-                      {c.name}
+                        {" "}
+                        {c.icon}{" "}
+                      </span>{" "}
+                      {c.name}{" "}
                     </button>
-                  ))}
+                  ))}{" "}
                 </div>
               )}
-
               <div className="flex gap-4 pt-4">
+                {" "}
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
                   className="flex-1 font-bold text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
-                  Cancel
-                </button>
+                  {" "}
+                  Cancel{" "}
+                </button>{" "}
                 <button
                   type="submit"
                   disabled={loading}
                   className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
                 >
-                  {loading ? "Saving..." : "Save Record"}
-                </button>
+                  {" "}
+                  {loading ? "Saving..." : "Save Record"}{" "}
+                </button>{" "}
               </div>
             </form>
           </div>
