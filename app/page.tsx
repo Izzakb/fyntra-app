@@ -314,42 +314,49 @@ export default function FyntraLanding() {
         id="pricing"
         className="py-32 relative z-10 border-t border-slate-800/50 bg-[#020617]"
       >
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
-            >
-              Capital Access
+            <h2 className="font-space-grotesk text-4xl font-bold tracking-tight uppercase">
+              Harga Transparan
             </h2>
             <p className="text-slate-500 mt-4 font-medium">
-              Transparent pricing. No hidden fees. Cancel anytime.
+              Tanpa biaya tersembunyi. Batalkan kapan saja.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 items-center">
-            {/* Starter */}
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Starter - Free */}
             <div className="bg-slate-900/40 p-10 rounded-[3rem] border border-slate-800/50">
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
-                Basic
+                Starter
               </h3>
-              <div className="text-4xl font-bold mb-6">
-                $0
-                <span className="text-lg text-slate-500 font-medium">/mo</span>
+              <div className="text-4xl font-bold mb-2">
+                Gratis
               </div>
+              <p className="text-slate-600 text-xs uppercase tracking-widest mb-6">Selamanya</p>
               <ul className="space-y-4 mb-10 text-sm text-slate-400">
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> 2 Bank Connections
+                  <span className="text-blue-500">✓</span> Maks. 2 Dompet
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> Basic Ledger
+                  <span className="text-blue-500">✓</span> Catat Transaksi Manual
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-500">✓</span> 3x Scan AI / Bulan
                 </li>
                 <li className="flex items-center gap-3 text-slate-600">
-                  <span className="text-slate-700">×</span> AI Insights
+                  <span className="text-slate-700">×</span> AI Financial Advisor
+                </li>
+                <li className="flex items-center gap-3 text-slate-600">
+                  <span className="text-slate-700">×</span> Export Excel / PDF
                 </li>
               </ul>
-              <button className="w-full py-4 border border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition">
-                Get Started
-              </button>
+              <Link
+                href="/register"
+                className="block w-full py-4 text-center border border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition"
+              >
+                Mulai Gratis
+              </Link>
             </div>
 
             {/* Pro - Highlighted */}
@@ -358,56 +365,51 @@ export default function FyntraLanding() {
                 Most Popular
               </div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">
-                Wealth Pro
+                Fyntra Pro
               </h3>
-              <div className="text-5xl font-bold mb-6">
-                $15
-                <span className="text-lg text-slate-400 font-medium">/mo</span>
+              <div className="mb-1">
+                <span className="text-sm font-bold text-slate-400 uppercase">Rp </span>
+                <span className="text-5xl font-bold">19.000</span>
               </div>
+              <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-6">≈ Rp 600 / hari</p>
               <ul className="space-y-4 mb-10 text-sm text-slate-300">
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-400">✓</span> Unlimited Connections
+                  <span className="text-blue-400">✓</span> Unlimited Dompet & Rekening
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-400">✓</span> Full AI
-                  Categorization
+                  <span className="text-blue-400">✓</span> Unlimited Scan AI
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-400">✓</span> Advanced Portfolio
-                  Analytics
+                  <span className="text-blue-400">✓</span> AI Financial Advisor
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-400">✓</span> Export Excel & PDF
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-blue-400">✓</span> Automasi Tagihan
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="text-blue-400">✓</span> Priority Support
                 </li>
               </ul>
-              <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg shadow-blue-900/30">
-                Upgrade to Pro
-              </button>
+              <Link
+                href="/pricing"
+                className="block w-full py-4 text-center bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg shadow-blue-900/30"
+              >
+                Berlangganan Sekarang
+              </Link>
+              <p className="text-center text-[9px] text-slate-500 mt-3 font-bold uppercase tracking-widest">
+                Pembayaran via Midtrans — QRIS, VA, GoPay
+              </p>
             </div>
+          </div>
 
-            {/* Elite */}
-            <div className="bg-slate-900/40 p-10 rounded-[3rem] border border-slate-800/50">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
-                Family Office
-              </h3>
-              <div className="text-4xl font-bold mb-6">
-                $49
-                <span className="text-lg text-slate-500 font-medium">/mo</span>
-              </div>
-              <ul className="space-y-4 mb-10 text-sm text-slate-400">
-                <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> Everything in Pro
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> Multi-User Access
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> Custom API Access
-                </li>
-              </ul>
-              <button className="w-full py-4 border border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition">
-                Contact Sales
-              </button>
+          {/* Contact Info */}
+          <div className="mt-16 pt-10 border-t border-slate-800/50 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-4">Butuh bantuan? Hubungi kami</p>
+            <div className="flex flex-col md:flex-row justify-center gap-6 text-sm text-slate-400">
+              <span>📱 WhatsApp: <a href="https://wa.me/6282117132290" className="text-blue-400 hover:text-blue-300 transition">+62 821-1713-2290</a></span>
+              <span>✉️ Email: <a href="mailto:faizax.app@gmail.com" className="text-blue-400 hover:text-blue-300 transition">faizax.app@gmail.com</a></span>
             </div>
           </div>
         </div>

@@ -2,18 +2,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 export default function UpgradePage() {
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +18,7 @@ export default function UpgradePage() {
 
   return (
     <div
-      className={`${inter.className} max-w-6xl mx-auto pb-24 px-6 lg:px-0 bg-transparent`}
+      className={`max-w-6xl mx-auto pb-24 px-6 lg:px-0 bg-transparent`}
     >
       {/* --- HERO SECTION --- */}
       <header className="mb-20 text-center relative pt-10">
@@ -39,7 +27,7 @@ export default function UpgradePage() {
           Limited Launch Offer
         </span>
         <h1
-          className={`${spaceGrotesk.className} text-4xl md:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white uppercase italic`}
+          className={`font-space-grotesk text-4xl md:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white uppercase italic`}
         >
           Master Your <span className="text-blue-600">Money.</span>
         </h1>
@@ -55,7 +43,7 @@ export default function UpgradePage() {
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm flex flex-col transition-all">
           <div className="mb-10">
             <h3
-              className={`${spaceGrotesk.className} text-2xl font-bold dark:text-white uppercase italic tracking-tight`}
+              className={`font-space-grotesk text-2xl font-bold dark:text-white uppercase italic tracking-tight`}
             >
               Starter
             </h3>
@@ -94,7 +82,7 @@ export default function UpgradePage() {
 
           <div className="mb-10">
             <h3
-              className={`${spaceGrotesk.className} text-2xl font-bold text-white uppercase italic tracking-tight`}
+              className={`font-space-grotesk text-2xl font-bold text-white uppercase italic tracking-tight`}
             >
               Pro
             </h3>
@@ -168,7 +156,7 @@ export default function UpgradePage() {
       <section className="grid md:grid-cols-2 gap-12 mb-20 bg-white dark:bg-slate-900/20 p-12 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 leading-relaxed transition-all">
         <div>
           <h4
-            className={`${spaceGrotesk.className} text-xl font-bold dark:text-white uppercase mb-6 italic`}
+            className={`font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic`}
           >
             Kenapa Fyntra Pro?
           </h4>
@@ -193,7 +181,7 @@ export default function UpgradePage() {
         </div>
         <div>
           <h4
-            className={`${spaceGrotesk.className} text-xl font-bold dark:text-white uppercase mb-6 italic`}
+            className={`font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic`}
           >
             Pertanyaan Umum
           </h4>
@@ -223,14 +211,14 @@ export default function UpgradePage() {
       {/* --- FOOTER LEGAL & CONTACT --- */}
       <footer className="text-center pt-16 border-t border-slate-100 dark:border-slate-800">
         <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-12">
-          <a href="/legal/terms" className="hover:text-blue-500">
+          <a href="/terms" className="hover:text-blue-500">
             Syarat & Ketentuan
           </a>
-          <a href="/legal/privacy" className="hover:text-blue-500">
+          <a href="/privacy" className="hover:text-blue-500">
             Kebijakan Privasi
           </a>
-          <a href="/legal/refund" className="hover:text-blue-500">
-            Refund Policy
+          <a href="/refund" className="hover:text-blue-500">
+            Kebijakan Pengembalian Dana
           </a>
         </div>
 
@@ -239,10 +227,10 @@ export default function UpgradePage() {
             Kontak Bisnis:
           </p>
           <p className="flex items-center justify-center gap-2 mb-1">
-            WhatsApp: +62 821-1713-2290
+            WhatsApp: <a href="https://wa.me/6282117132290" className="text-blue-500 hover:text-blue-400 transition">+62 821-1713-2290</a>
           </p>
           <p className="flex items-center justify-center gap-2">
-            Email: faizax.app@gmail.com
+            Email: <a href="mailto:faizax.app@gmail.com" className="text-blue-500 hover:text-blue-400 transition">faizax.app@gmail.com</a>
           </p>
           <p className="mt-8 opacity-40 font-bold uppercase tracking-[0.2em]">
             Fyntra Financial by Faizax Ecosystem &copy; 2026
