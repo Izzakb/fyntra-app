@@ -448,9 +448,7 @@ export default function FyntraLanding() {
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white font-bold">
                   F
                 </div>
-                <span
-                  className={`font-space-grotesk text-xl font-bold tracking-tight uppercase`}
-                >
+                <span className="font-space-grotesk text-xl font-bold tracking-tight uppercase">
                   Fyntra.
                 </span>
               </div>
@@ -466,22 +464,22 @@ export default function FyntraLanding() {
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
+                  <Link href="/dashboard" className="hover:text-blue-400 transition">
                     Wealth Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <a href="#demo" className="hover:text-blue-400 transition">
+                    Platform Demo
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    AI Ledger
+                  <a href="#features" className="hover:text-blue-400 transition">
+                    Features
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    Security
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition">
+                  <a href="#pricing" className="hover:text-blue-400 transition">
                     Pricing
                   </a>
                 </li>
@@ -490,27 +488,27 @@ export default function FyntraLanding() {
 
             <div>
               <h4 className="font-bold text-xs uppercase tracking-widest text-slate-300 mb-6">
-                Company
+                Account
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    About Us
-                  </a>
+                  <Link href="/register" className="hover:text-blue-400 transition">
+                    Create Account
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    Careers
-                  </a>
+                  <Link href="/login" className="hover:text-blue-400 transition">
+                    Sign In
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    Press
-                  </a>
+                  <Link href="/forgot-password" className="hover:text-blue-400 transition">
+                    Forgot Password
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
-                    Contact
+                  <a href="#faq" className="hover:text-blue-400 transition">
+                    FAQ
                   </a>
                 </li>
               </ul>
@@ -522,17 +520,17 @@ export default function FyntraLanding() {
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
+                  <Link href="/terms" className="hover:text-blue-400 transition">
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
+                  <Link href="/privacy" className="hover:text-blue-400 transition">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition">
+                  <a href="#faq" className="hover:text-blue-400 transition">
                     Cookie Policy
                   </a>
                 </li>
@@ -541,18 +539,14 @@ export default function FyntraLanding() {
           </div>
 
           <div className="border-t border-slate-800/50 pt-8 flex flex-col items-center text-center">
-            {/* Disclaimer Khas Fintech */}
             <p className="text-[9px] text-slate-600 leading-relaxed max-w-4xl mb-6">
-              Fyntra is a financial technology company, not a bank. Banking
-              services are provided by our partner banks, Members FDIC.
-              Investment products are not FDIC insured, not bank guaranteed, and
-              may lose value. The information provided is for educational
-              purposes only and should not be considered legal or financial
-              advice.
+              Fyntra adalah perusahaan teknologi keuangan, bukan bank. Layanan ini
+              tidak menjamin keuntungan investasi. Informasi yang disediakan bersifat
+              edukatif dan tidak merupakan saran keuangan atau hukum. Selalu konsultasikan
+              keputusan keuangan Anda dengan profesional berlisensi.
             </p>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              © {new Date().getFullYear()} Faizax Ecosystem. All rights
-              reserved.
+              © {new Date().getFullYear()} Faizax Ecosystem. All rights reserved.
             </p>
           </div>
         </div>
