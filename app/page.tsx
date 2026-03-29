@@ -8,18 +8,6 @@ import {
   AnimatePresence,
 } from "framer-motion";
 
-// FONT PREMIUM
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 // --- DATA FAQ ---
 const FAQS = [
   {
@@ -50,7 +38,7 @@ export default function FyntraLanding() {
   return (
     <div
       ref={containerRef}
-      className={`${inter.className} min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative`}
+      className={`min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative`}
     >
       {/* GLOWING BACKGROUND LAYERS (PARALLAX) */}
       <motion.div
@@ -69,13 +57,13 @@ export default function FyntraLanding() {
           <div className="flex items-center gap-4 group cursor-pointer">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 10 }}
-              className={`${spaceGrotesk.className} w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20`}
+              className={`font-space-grotesk w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20`}
             >
               F
             </motion.div>
             <div>
               <span
-                className={`${spaceGrotesk.className} text-2xl font-bold tracking-tight uppercase block leading-none`}
+                className={`font-space-grotesk text-2xl font-bold tracking-tight uppercase block leading-none`}
               >
                 Fyntra<span className="text-blue-500">.</span>
               </span>
@@ -142,7 +130,7 @@ export default function FyntraLanding() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
-            className={`${spaceGrotesk.className} text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8`}
+            className={`font-space-grotesk text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8`}
           >
             Master your capital <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
@@ -172,19 +160,60 @@ export default function FyntraLanding() {
             >
               Start Building Wealth
             </Link>
-            <button className="px-10 py-5 bg-slate-900/50 text-white border border-slate-700/50 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all hover:-translate-y-1 backdrop-blur-md">
+            <button
+              onClick={() => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" })}
+              className="px-10 py-5 bg-slate-900/50 text-white border border-slate-700/50 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all hover:-translate-y-1 backdrop-blur-md"
+            >
               View Platform Demo
             </button>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* 3. FEATURES SECTION */}
+      {/* 3. INTERACTIVE DEMO SECTION */}
+      <section id="demo" className="py-24 relative z-10 border-t border-slate-800/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-2 mb-4 text-[10px] font-bold tracking-[0.3em] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full uppercase"
+            >
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              Live Demo — Data Dummy
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className={`font-space-grotesk text-3xl md:text-4xl font-bold tracking-tight`}
+            >
+              Your Wealth Command Center
+            </motion.h2>
+            <p className="text-slate-500 mt-3 font-medium text-sm">
+              Klik-klik untuk explore fitur Fyntra secara langsung.
+            </p>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="relative"
+          >
+            <DemoWidget spaceGrotesk="font-space-grotesk" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 4. FEATURES SECTION */}
       <section id="features" className="py-32 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2
-              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
+              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
             >
               The Arsenal
             </h2>
@@ -212,7 +241,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
+                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
               >
                 AI Magic Ledger
               </h3>
@@ -239,7 +268,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
+                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
               >
                 Bank-Grade Vault
               </h3>
@@ -267,7 +296,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
+                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
               >
                 Global Portfolio
               </h3>
@@ -288,7 +317,7 @@ export default function FyntraLanding() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2
-              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
+              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
             >
               Capital Access
             </h2>
@@ -392,7 +421,7 @@ export default function FyntraLanding() {
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2
-              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
+              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
             >
               Clear Answers
             </h2>
@@ -420,7 +449,7 @@ export default function FyntraLanding() {
                   F
                 </div>
                 <span
-                  className={`${spaceGrotesk.className} text-xl font-bold tracking-tight uppercase`}
+                  className={`font-space-grotesk text-xl font-bold tracking-tight uppercase`}
                 >
                   Fyntra.
                 </span>
@@ -528,6 +557,311 @@ export default function FyntraLanding() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+// --- KOMPONEN DEMO INTERAKTIF ---
+const DEMO_TABS = ["Dashboard", "Transactions", "Analytics"];
+
+const DEMO_TRANSACTIONS = [
+  { id: 1, desc: "Kopi Starbucks", category: "Makanan", amount: -65000, type: "expense", time: "09:14" },
+  { id: 2, desc: "Gaji Bulan Ini", category: "Income", amount: 12500000, type: "income", time: "08:00" },
+  { id: 3, desc: "Grab ke Kantor", category: "Transportasi", amount: -32000, type: "expense", time: "07:45" },
+  { id: 4, desc: "Netflix", category: "Hiburan", amount: -54000, type: "expense", time: "Kemarin" },
+  { id: 5, desc: "Freelance Design", category: "Income", amount: 3200000, type: "income", time: "Kemarin" },
+];
+
+const DEMO_WALLETS = [
+  { name: "BCA", balance: 8450000, color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  { name: "GoPay", balance: 1230000, color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+  { name: "Cash", balance: 500000, color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+];
+
+const DEMO_CATEGORIES = [
+  { name: "Makanan", pct: 42, color: "#ef4444" },
+  { name: "Transportasi", pct: 24, color: "#f59e0b" },
+  { name: "Hiburan", pct: 18, color: "#8b5cf6" },
+  { name: "Lainnya", pct: 16, color: "#64748b" },
+];
+
+function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
+  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addedTx, setAddedTx] = useState<any[]>([]);
+
+  const allTx = [...addedTx, ...DEMO_TRANSACTIONS];
+  const totalIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const totalExpense = Math.abs(allTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0));
+  const balance = 8450000 + 1230000 + 500000;
+
+  const fmt = (n: number) => "Rp " + Math.abs(n).toLocaleString("id-ID");
+
+  return (
+    <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/40">
+      {/* Browser Bar */}
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-800/50 bg-slate-950/50">
+        <div className="flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-rose-500/60" />
+          <div className="w-3 h-3 rounded-full bg-amber-500/60" />
+          <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
+        </div>
+        <div className="flex-1 bg-slate-800/50 rounded-lg px-4 py-1.5 text-[11px] text-slate-500 font-mono">
+          fyntra.app/dashboard
+        </div>
+      </div>
+
+      <div className="flex min-h-[520px]">
+        {/* Sidebar Mini */}
+        <div className="hidden md:flex w-48 flex-col bg-slate-950/50 border-r border-slate-800/50 p-4 gap-1">
+          <p className={`${spaceGrotesk} text-lg font-bold text-white px-3 mb-4`}>
+            FYNTRA<span className="text-blue-500">.</span>
+          </p>
+          {DEMO_TABS.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all ${
+                activeTab === tab
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-6 overflow-auto">
+          {/* Mobile Tab Bar */}
+          <div className="flex md:hidden gap-2 mb-6">
+            {DEMO_TABS.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  activeTab === tab ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* DASHBOARD TAB */}
+          {activeTab === "Dashboard" && (
+            <div className="space-y-4">
+              {/* Net Worth Header */}
+              <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700/30">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Liquid Cash</p>
+                <p className={`${spaceGrotesk} text-3xl font-bold text-white`}>{fmt(balance)}</p>
+                <div className="flex gap-6 mt-4 pt-4 border-t border-slate-700/30">
+                  <div>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">Net Worth</p>
+                    <p className={`${spaceGrotesk} text-base font-bold text-emerald-400`}>{fmt(balance + 15000000)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">Investment</p>
+                    <p className={`${spaceGrotesk} text-base font-bold text-white`}>{fmt(15000000)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet Pills */}
+              <div className="flex gap-3 flex-wrap">
+                {DEMO_WALLETS.map(w => (
+                  <div key={w.name} className={`px-4 py-2.5 rounded-xl border text-[11px] font-bold ${w.color}`}>
+                    {w.name} · {fmt(w.balance)}
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Income", val: fmt(totalIncome), color: "text-emerald-400" },
+                  { label: "Expense", val: fmt(totalExpense), color: "text-rose-400" },
+                  { label: "Cashflow", val: fmt(totalIncome - totalExpense), color: "text-blue-400" },
+                ].map(s => (
+                  <div key={s.label} className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">{s.label}</p>
+                    <p className={`${spaceGrotesk} text-sm font-bold ${s.color}`}>{s.val}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Add Transaction Button */}
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95"
+              >
+                + Add Transaction
+              </button>
+
+              {addedTx.length > 0 && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-[11px] text-emerald-400 font-bold">
+                  ✓ {addedTx.length} transaksi baru ditambahkan!
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TRANSACTIONS TAB */}
+          {activeTab === "Transactions" && (
+            <div className="space-y-3">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent Activity</p>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all"
+                >
+                  + Add
+                </button>
+              </div>
+              {allTx.map((t, i) => (
+                <div key={i} className="flex justify-between items-center p-4 bg-slate-800/30 rounded-xl border border-slate-700/20">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${
+                      t.type === "income" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                    }`}>
+                      {t.type === "income" ? "↓" : "↑"}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white">{t.desc}</p>
+                      <p className="text-[10px] text-slate-500 uppercase">{t.category} · {t.time}</p>
+                    </div>
+                  </div>
+                  <p className={`${spaceGrotesk} font-bold text-sm ${t.type === "income" ? "text-emerald-400" : "text-rose-400"}`}>
+                    {t.type === "income" ? "+" : "-"}{fmt(t.amount)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ANALYTICS TAB */}
+          {activeTab === "Analytics" && (
+            <div className="space-y-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">Expense Breakdown</p>
+              {DEMO_CATEGORIES.map(c => (
+                <div key={c.name} className="space-y-2">
+                  <div className="flex justify-between text-[11px] font-bold">
+                    <span className="text-slate-300">{c.name}</span>
+                    <span className="text-slate-400">{c.pct}%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${c.pct}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: c.color }}
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Top Category</p>
+                  <p className="text-sm font-bold text-white">Makanan</p>
+                </div>
+                <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Saving Rate</p>
+                  <p className={`${spaceGrotesk} text-sm font-bold text-emerald-400`}>73%</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Add Transaction Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 rounded-[2.5rem]"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm"
+            >
+              <h3 className={`${spaceGrotesk} text-lg font-bold text-white mb-4`}>Add Transaction</h3>
+              <DemoAddForm
+                onAdd={(tx) => { setAddedTx(prev => [tx, ...prev]); setShowAddModal(false); setActiveTab("Transactions"); }}
+                onCancel={() => setShowAddModal(false)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function DemoAddForm({ onAdd, onCancel }: { onAdd: (tx: any) => void; onCancel: () => void }) {
+  const [type, setType] = useState<"expense" | "income">("expense");
+  const [desc, setDesc] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const handleSubmit = () => {
+    if (!desc || !amount) return;
+    onAdd({
+      desc,
+      category: type === "income" ? "Income" : "Lainnya",
+      amount: type === "income" ? Number(amount) : -Number(amount),
+      type,
+      time: "Baru saja",
+    });
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex p-1 bg-slate-800 rounded-xl">
+        {(["expense", "income"] as const).map(t => (
+          <button
+            key={t}
+            onClick={() => setType(t)}
+            className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${
+              type === t
+                ? t === "expense" ? "bg-rose-500 text-white" : "bg-emerald-500 text-white"
+                : "text-slate-500"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      <input
+        type="text"
+        placeholder="Deskripsi (e.g. Kopi Starbucks)"
+        value={desc}
+        onChange={e => setDesc(e.target.value)}
+        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white outline-none font-medium placeholder:text-slate-600"
+      />
+      <input
+        type="number"
+        placeholder="Jumlah (Rp)"
+        value={amount}
+        onChange={e => setAmount(e.target.value)}
+        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white outline-none font-medium placeholder:text-slate-600"
+      />
+      <div className="flex gap-3 pt-1">
+        <button onClick={onCancel} className="flex-1 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors">
+          Cancel
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95"
+        >
+          Save
+        </button>
+      </div>
     </div>
   );
 }
