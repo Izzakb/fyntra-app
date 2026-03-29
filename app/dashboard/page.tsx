@@ -14,18 +14,224 @@ import {
 } from "recharts";
 import AiAdvisor from "@/components/AiAdvisor";
 
+// FONT PREMIUM
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
+// SVG PREMIUM KATEGORI
 const CATEGORIES = [
-  { name: "Makanan", icon: "🍔" },
-  { name: "Transportasi", icon: "🚗" },
-  { name: "Hiburan", icon: "🎮" },
-  { name: "Belanja", icon: "🛍️" },
-  { name: "Kesehatan", icon: "💊" },
-  { name: "Income", icon: "💰" },
-  { name: "Lainnya", icon: "✨" },
+  {
+    name: "Makanan",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+        <path d="M7 2v20" />
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+      </svg>
+    ),
+  },
+  {
+    name: "Transportasi",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+        <circle cx="7" cy="17" r="2" />
+        <path d="M9 17h6" />
+        <circle cx="17" cy="17" r="2" />
+      </svg>
+    ),
+  },
+  {
+    name: "Hiburan",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect width="20" height="12" x="2" y="6" rx="2" />
+        <path d="M6 12h4" />
+        <path d="M8 10v4" />
+        <path d="M15 13h.01" />
+        <path d="M18 11h.01" />
+      </svg>
+    ),
+  },
+  {
+    name: "Belanja",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+    ),
+  },
+  {
+    name: "Kesehatan",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
+        <path d="m8.5 8.5 7 7" />
+      </svg>
+    ),
+  },
+  {
+    name: "Income",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Lainnya",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+      </svg>
+    ),
+  },
 ];
 
+// 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
+const FormattedMoney = ({
+  amount,
+  prefix = "Rp ",
+  showSign = false,
+}: {
+  amount: number;
+  prefix?: string;
+  showSign?: boolean;
+}) => {
+  const safeAmount = amount || 0;
+  const isNegative = safeAmount < 0;
+  const absAmount = Math.abs(safeAmount);
+
+  const formattedRaw = absAmount.toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
+  });
+
+  const parts = formattedRaw.split(",");
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+
+  let sign = "";
+  if (showSign) {
+    sign = isNegative ? "-" : "+";
+  } else if (isNegative) {
+    sign = "-";
+  }
+
+  return (
+    <span>
+      {sign} {prefix}
+      {integerPart}
+      {decimalPart && (
+        <span className="text-[0.6em] opacity-60 ml-[1px]">,{decimalPart}</span>
+      )}
+    </span>
+  );
+};
+
+// 💡 KOMPONEN CUSTOM TOOLTIP UNTUK CHART
+const CustomChartTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const isIncome = data.name === "In";
+
+    return (
+      <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 p-4 rounded-2xl shadow-2xl shadow-black/50">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
+          {isIncome ? (
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          ) : (
+            <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+          )}
+          {isIncome ? "Total Income" : "Total Expense"}
+        </p>
+        <p
+          className={`${spaceGrotesk.className} font-bold text-xl ${isIncome ? "text-emerald-400" : "text-rose-400"}`}
+        >
+          <FormattedMoney amount={data.t} />
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardHomePage() {
-  // 1. PANGGIL DATA WEALTH DARI CONTEXT BARU
   const {
     balance,
     totalInvestment,
@@ -51,6 +257,13 @@ export default function DashboardHomePage() {
   const [magicText, setMagicText] = useState("");
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+
+  // 💡 AUTO-SELECT DEFAULT WALLET: Kalau wallets sudah load, langsung isi wallet pertama
+  useEffect(() => {
+    if (wallets && wallets.length > 0 && !selectedWalletId) {
+      setSelectedWalletId(wallets[0].id);
+    }
+  }, [wallets, selectedWalletId]);
 
   const handleMagicProcess = async (textToProcess: string = magicText) => {
     if (!textToProcess) return toast.error("Ketik sesuatu dulu Bos!");
@@ -189,10 +402,20 @@ export default function DashboardHomePage() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 💡 VALIDASI KEAMANAN: Memastikan Wallet Tidak Kosong
+    if (!selectedWalletId) {
+      toast.error("Validasi Gagal", {
+        description: "Pilih Source Wallet terlebih dahulu, Bos!",
+      });
+      return;
+    }
+
     setLoading(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     const { error } = await supabase.rpc("process_fyntra_transaction", {
       p_user_id: user?.id,
       p_wallet_id: selectedWalletId,
@@ -201,66 +424,83 @@ export default function DashboardHomePage() {
       p_category: transactionType === "income" ? "Income" : selectedCategory,
       p_description: transactionName,
     });
-    if (!error) {
-      toast.success("Tersimpan!");
+
+    if (error) {
+      toast.error("Gagal Simpan", { description: error.message });
+    } else {
+      toast.success("Transaction Saved!");
       setShowTransactionModal(false);
       refreshGlobalData();
       fetchData();
+
+      // 💡 RESET FORM
+      setTransactionName("");
+      setTransactionAmount("");
+      setMagicText("");
     }
     setLoading(false);
   };
 
   if (loadingGlobal)
     return (
-      <div className="p-10 font-black italic text-slate-300 dark:text-slate-700">
+      <div
+        className={`${inter.className} p-10 font-bold italic text-slate-300 dark:text-slate-700`}
+      >
         Syncing Ledger...
       </div>
     );
 
   return (
-    <div className="bg-transparent min-h-screen transition-colors duration-300 space-y-10 pb-20">
-      {/* 2. HEADER WEALTH DASHBOARD (DESAIN BARU) */}
-      <div className="bg-slate-900 dark:bg-blue-600 p-10 md:p-12 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden transition-all duration-300">
+    <div
+      className={`${inter.className} bg-transparent min-h-screen transition-colors duration-300 space-y-10 pb-20`}
+    >
+      {/* 2. HEADER WEALTH DASHBOARD */}
+      <div className="bg-slate-900 dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 md:p-12 rounded-[3.5rem] border border-transparent dark:border-slate-800/50 text-white shadow-2xl relative overflow-hidden transition-all duration-300">
+        <div className="absolute top-[-30%] left-[-10%] w-[60%] h-[60%] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
         <div className="relative z-10 flex flex-col gap-8">
-          {/* Baris Atas: Uang Liquid & Tombol Transaksi */}
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             <div>
-              <p className="text-slate-400 dark:text-blue-200 text-[10px] font-black uppercase tracking-[0.5em] mb-3">
+              <p className="text-slate-400 dark:text-blue-300 text-[10px] font-bold uppercase tracking-[0.5em] mb-3">
                 Liquid Cash (Siap Pakai)
               </p>
-              <h2 className="text-5xl md:text-6xl font-black italic tracking-tighter">
-                Rp {balance.toLocaleString("id-ID")}
+              <h2
+                className={`${spaceGrotesk.className} text-5xl md:text-6xl font-bold tracking-tight`}
+              >
+                <FormattedMoney amount={balance} />
               </h2>
             </div>
             <button
               onClick={() => setShowTransactionModal(true)}
-              className="px-8 py-4 bg-blue-600 dark:bg-white dark:text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap hover:scale-105 active:scale-95 transition-all"
+              className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/30 whitespace-nowrap hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all"
             >
               + Add Transaction
             </button>
           </div>
 
-          {/* Baris Bawah: Investasi & Master Asset */}
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-800 dark:border-blue-500/50 pt-6 mt-2">
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-800 dark:border-slate-700/50 pt-6 mt-2">
             <div>
-              <p className="text-slate-400 dark:text-blue-200 text-[9px] font-black uppercase tracking-widest mb-1">
+              <p className="text-slate-400 dark:text-slate-400 text-[9px] font-bold uppercase tracking-widest mb-1">
                 Total Investment
               </p>
-              <p className="text-xl md:text-2xl font-black italic">
-                Rp {totalInvestment.toLocaleString("id-ID")}
+              <p
+                className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold`}
+              >
+                <FormattedMoney amount={totalInvestment} />
               </p>
             </div>
             <div>
-              <p className="text-emerald-400 dark:text-emerald-300 text-[9px] font-black uppercase tracking-widest mb-1">
+              <p className="text-emerald-400 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-widest mb-1">
                 Net Worth (Master Asset)
               </p>
-              <p className="text-xl md:text-2xl font-black italic text-emerald-400 dark:text-white">
-                Rp {netWorth.toLocaleString("id-ID")}
+              <p
+                className={`${spaceGrotesk.className} text-xl md:text-2xl font-bold text-emerald-400 dark:text-emerald-300`}
+              >
+                <FormattedMoney amount={netWorth} />
               </p>
             </div>
           </div>
         </div>
-        {/* Dekorasi Background */}
         <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl z-0 pointer-events-none"></div>
       </div>
 
@@ -269,13 +509,15 @@ export default function DashboardHomePage() {
         {wallets.map((w) => (
           <div
             key={w.id}
-            className="min-w-[220px] bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300"
+            className="min-w-[220px] bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300"
           >
-            <p className="font-black text-xs uppercase italic text-slate-800 dark:text-slate-300 mb-4">
-              {w.icon} {w.wallet_name}
+            <p className="font-bold text-xs uppercase text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+              <span className="text-lg">{w.icon}</span> {w.wallet_name}
             </p>
-            <p className="font-black text-xl text-blue-600 dark:text-blue-400 italic tracking-tighter">
-              Rp {w.balance.toLocaleString("id-ID")}
+            <p
+              className={`${spaceGrotesk.className} font-bold text-xl text-slate-900 dark:text-white tracking-tight`}
+            >
+              <FormattedMoney amount={w.balance} />
             </p>
           </div>
         ))}
@@ -290,44 +532,51 @@ export default function DashboardHomePage() {
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+        <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
             Income (Month)
           </p>
-          <p className="text-2xl font-black text-emerald-500">
-            +Rp {monthlyStats.income.toLocaleString("id-ID")}
+          <p
+            className={`${spaceGrotesk.className} text-2xl font-bold text-emerald-500`}
+          >
+            <FormattedMoney amount={monthlyStats.income} showSign={true} />
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+        <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
             Expense (Month)
           </p>
-          <p className="text-2xl font-black text-rose-500">
-            -Rp {monthlyStats.expense.toLocaleString("id-ID")}
+          <p
+            className={`${spaceGrotesk.className} text-2xl font-bold text-rose-500`}
+          >
+            <FormattedMoney
+              amount={monthlyStats.expense * -1}
+              showSign={true}
+            />
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 italic">
+        <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
             Cashflow
           </p>
           <p
-            className={`text-2xl font-black ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
+            className={`${spaceGrotesk.className} text-2xl font-bold ${monthlyStats.net >= 0 ? "text-blue-600 dark:text-blue-400" : "text-orange-500"}`}
           >
-            Rp {monthlyStats.net.toLocaleString("id-ID")}
+            <FormattedMoney amount={monthlyStats.net} />
           </p>
         </div>
       </div>
 
       {/* GOALS & CHART */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm h-80 flex flex-col transition-colors duration-300">
+        <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-80 flex flex-col transition-colors duration-300">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 italic">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
               Future Goals
             </h3>
             <Link
               href="/dashboard/goals"
-              className="text-[9px] font-black text-blue-500 uppercase tracking-widest"
+              className="text-[9px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors"
             >
               Detail →
             </Link>
@@ -342,14 +591,16 @@ export default function DashboardHomePage() {
                 return (
                   <div key={g.id} className="space-y-3">
                     <div className="flex justify-between items-end">
-                      <p className="font-black text-sm text-slate-800 dark:text-slate-200 uppercase italic truncate max-w-[150px]">
+                      <p className="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase truncate max-w-[150px]">
                         {g.goal_name}
                       </p>
-                      <p className="font-black text-blue-600 dark:text-blue-400 text-sm italic">
+                      <p
+                        className={`${spaceGrotesk.className} font-bold text-blue-600 dark:text-blue-400 text-sm`}
+                      >
                         {progress}%
                       </p>
                     </div>
-                    <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-3 bg-slate-100 dark:bg-slate-800/50 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-600 transition-all duration-1000"
                         style={{ width: `${progress}%` }}
@@ -359,15 +610,15 @@ export default function DashboardHomePage() {
                 );
               })
             ) : (
-              <p className="text-center text-slate-400 font-bold text-[10px] uppercase italic mt-10">
+              <p className="text-center text-slate-500 font-bold text-[10px] uppercase mt-10">
                 No goals yet.
               </p>
             )}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm h-80 flex flex-col transition-colors duration-300">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 mb-6 italic text-center w-full">
+        <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-80 flex flex-col transition-colors duration-300">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-6 text-center w-full">
             Cashflow Chart
           </h3>
           <div className="h-full w-full">
@@ -382,17 +633,11 @@ export default function DashboardHomePage() {
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fontWeight: "bold" }}
+                  tick={{ fontSize: 10, fontWeight: "bold", fill: "#64748b" }}
                 />
                 <Tooltip
+                  content={<CustomChartTooltip />}
                   cursor={{ fill: "transparent" }}
-                  contentStyle={{
-                    borderRadius: "20px",
-                    border: "none",
-                    backgroundColor: "var(--card)",
-                    color: "var(--foreground)",
-                    fontWeight: "bold",
-                  }}
                 />
                 <Bar dataKey="t" radius={[6, 6, 6, 6]} barSize={45}>
                   {[{ c: "#10b981" }, { c: "#f43f5e" }].map((e, i) => (
@@ -406,60 +651,116 @@ export default function DashboardHomePage() {
       </div>
 
       {/* RECENT ACTIVITY */}
-      <div className="bg-white dark:bg-slate-900 p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 dark:text-slate-600 italic mb-8">
+      <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-xl p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm transition-colors duration-300">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-8">
           Recent Activity
         </h3>
         <div className="space-y-4">
           {transactions.slice(0, 5).map((t) => (
             <div
               key={t.id}
-              className="flex justify-between items-center p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-50 dark:border-slate-800 transition-colors"
+              className="flex justify-between items-center p-5 bg-slate-50/50 dark:bg-slate-800/30 rounded-[2rem] border border-slate-50 dark:border-slate-800/50 transition-colors"
             >
               <div className="flex items-center gap-5">
                 <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg ${t.type === "income" ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400"}`}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center ${t.type === "income" ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border dark:border-emerald-500/20" : "bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 dark:border dark:border-rose-500/20"}`}
                 >
-                  {t.type === "income" ? "💰" : "💸"}
+                  {t.type === "income" ? (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 5v14" />
+                      <path d="m19 12-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 19V5" />
+                      <path d="m5 12 7-7 7 7" />
+                    </svg>
+                  )}
                 </div>
                 <div>
-                  <p className="font-black text-sm text-slate-800 dark:text-slate-200">
+                  <p className="font-bold text-sm text-slate-800 dark:text-slate-200">
                     {t.description}
                   </p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mt-0.5">
                     {t.category}
                   </p>
                 </div>
               </div>
               <p
-                className={`font-black text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
+                className={`${spaceGrotesk.className} font-bold text-sm ${t.type === "income" ? "text-emerald-500" : "text-rose-500"}`}
               >
-                {t.type === "income" ? "+" : "-"} Rp{" "}
-                {t.amount.toLocaleString("id-ID")}
+                <FormattedMoney
+                  amount={t.type === "income" ? t.amount : t.amount * -1}
+                  showSign={true}
+                />
               </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* MODAL TRANSAKSI (DARK MODE READY) */}
+      {/* MODAL TRANSAKSI (TANPA SCROLLBAR) */}
       {showTransactionModal && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-10 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar border border-transparent dark:border-slate-800 transition-colors">
-            <h3 className="text-2xl font-black italic mb-6 dark:text-white text-slate-900">
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
+          <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
+            <h3
+              className={`${spaceGrotesk.className} text-xl font-bold mb-4 dark:text-white text-slate-900 uppercase`}
+            >
               Add Transaction
             </h3>
 
             {/* MAGIC BOX */}
-            <div className="mb-8 p-1 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-lg">
-              <div className="bg-white dark:bg-slate-800 rounded-[1.4rem] p-4 flex flex-col gap-3 transition-colors">
+            <div className="mb-5 p-[1px] rounded-3xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg shadow-blue-900/20">
+              <div className="bg-white dark:bg-[#060b1a] rounded-[1.4rem] p-4 flex flex-col gap-4 transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
-                    ✨ AI Magic Input
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m12 3-1.9 5.8a2 2 0 0 1-1.29 1.29L3 12l5.8 1.9a2 2 0 0 1 1.29 1.29L12 21l1.9-5.8a2 2 0 0 1 1.29-1.29L21 12l-5.8-1.9a2 2 0 0 1-1.29-1.29L12 3Z" />
+                    </svg>
+                    AI Magic Input
                   </span>
                   <div className="flex gap-2">
-                    <label className="cursor-pointer bg-slate-100 dark:bg-slate-700 p-2 rounded-xl text-sm transition-colors">
-                      📸{" "}
+                    <label className="cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-2.5 rounded-xl text-slate-600 dark:text-slate-300 transition-colors">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                        <circle cx="12" cy="13" r="3" />
+                      </svg>
                       <input
                         type="file"
                         accept="image/*"
@@ -470,17 +771,30 @@ export default function DashboardHomePage() {
                     <button
                       type="button"
                       onClick={startListening}
-                      className={`p-2 rounded-xl text-sm transition-all ${isListening ? "bg-rose-100 text-rose-500 animate-pulse" : "bg-slate-100 dark:bg-slate-700"}`}
+                      className={`p-2.5 rounded-xl transition-all ${isListening ? "bg-rose-500/10 text-rose-500 animate-pulse border border-rose-500/20" : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"}`}
                     >
-                      {isListening ? "🎙️" : "🎤"}
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" x2="12" y1="19" y2="22" />
+                      </svg>
                     </button>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Contoh: Kopi 15rb"
-                    className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 px-4 py-3 rounded-2xl text-xs font-bold dark:text-white outline-none transition-colors"
+                    placeholder="E.g: Kopi Starbucks 45rb"
+                    className="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 px-4 py-3 rounded-2xl text-xs font-bold dark:text-white outline-none transition-colors"
                     value={magicText}
                     onChange={(e) => setMagicText(e.target.value)}
                     onKeyDown={(e) =>
@@ -492,7 +806,7 @@ export default function DashboardHomePage() {
                     type="button"
                     onClick={() => handleMagicProcess()}
                     disabled={isMagicLoading}
-                    className="bg-slate-900 dark:bg-blue-600 text-white px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-colors"
+                    className="bg-slate-900 dark:bg-blue-600 text-white px-5 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-blue-500 transition-colors"
                   >
                     {isMagicLoading ? "..." : "Gas"}
                   </button>
@@ -501,37 +815,41 @@ export default function DashboardHomePage() {
             </div>
 
             {/* FORM */}
-            <form onSubmit={handleSubmitTransaction} className="space-y-5">
-              <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-colors">
+            <form onSubmit={handleSubmitTransaction} className="space-y-4">
+              <div className="flex p-1 bg-slate-100 dark:bg-slate-800/50 rounded-2xl transition-colors">
                 <button
                   type="button"
                   onClick={() => setTransactionType("expense")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "expense" ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${transactionType === "expense" ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-500"}`}
                 >
                   Expense
                 </button>
                 <button
                   type="button"
                   onClick={() => setTransactionType("income")}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${transactionType === "income" ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm" : "text-slate-400"}`}
+                  className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${transactionType === "income" ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm" : "text-slate-500"}`}
                 >
                   Income
                 </button>
               </div>
 
               <div>
-                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
-                  Sumber Dana
+                <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
+                  Source Wallet
                 </label>
                 <select
                   required
-                  className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
+                  className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                   value={selectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
                 >
+                  {/* Kalau butuh placeholder, buka comment di bawah, 
+                      tapi karena otomatis kepilih dompet pertama, ini bisa di-skip */}
+                  {/* <option value="" disabled>Select Wallet...</option> */}
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
-                      {w.wallet_name}
+                      {w.icon} {w.wallet_name} (Rp{" "}
+                      {w.balance.toLocaleString("id-ID")})
                     </option>
                   ))}
                 </select>
@@ -540,31 +858,38 @@ export default function DashboardHomePage() {
               <input
                 required
                 type="text"
-                placeholder="Deskripsi"
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
+                placeholder="Description"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                 value={transactionName}
                 onChange={(e) => setTransactionName(e.target.value)}
               />
               <input
                 required
                 type="number"
-                placeholder="Nominal (Rp)"
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
+                placeholder="Amount (Rp)"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                 value={transactionAmount}
                 onChange={(e) => setTransactionAmount(e.target.value)}
               />
 
               {transactionType === "expense" && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 pt-1">
                   {CATEGORIES.filter((c) => c.name !== "Income").map((c) => (
                     <button
                       key={c.name}
                       type="button"
                       onClick={() => setSelectedCategory(c.name)}
-                      className={`p-3 rounded-xl border text-[10px] font-black transition-all ${selectedCategory === c.name ? "bg-blue-600 text-white" : "bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-400"}`}
+                      className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-2 text-[8px] font-bold uppercase tracking-widest transition-all ${selectedCategory === c.name ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-900/20" : "bg-white dark:bg-slate-800/50 dark:border-slate-700/50 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                     >
-                      {c.icon}
-                      <br />
+                      <span
+                        className={
+                          selectedCategory === c.name
+                            ? "text-white"
+                            : "text-slate-400"
+                        }
+                      >
+                        {c.icon}
+                      </span>
                       {c.name}
                     </button>
                   ))}
@@ -575,14 +900,14 @@ export default function DashboardHomePage() {
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400 dark:text-slate-500 transition-colors"
+                  className="flex-1 font-bold text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/20 active:scale-95 transition-all"
                 >
                   {loading ? "Saving..." : "Save Record"}
                 </button>

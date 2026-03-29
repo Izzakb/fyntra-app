@@ -4,14 +4,178 @@ import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
 import { toast } from "sonner";
 
-// Daftar Tipe Aset Universal
+// FONT PREMIUM
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
+// 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
+const FormattedMoney = ({
+  amount,
+  prefix = "Rp ",
+  showSign = false,
+  className = "",
+}: {
+  amount: number;
+  prefix?: string;
+  showSign?: boolean;
+  className?: string;
+}) => {
+  const safeAmount = amount || 0;
+  const isNegative = safeAmount < 0;
+  const absAmount = Math.abs(safeAmount);
+
+  const formattedRaw = absAmount.toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
+  });
+
+  const parts = formattedRaw.split(",");
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+
+  let sign = "";
+  if (showSign) {
+    sign = isNegative ? "-" : "+";
+  } else if (isNegative) {
+    sign = "-";
+  }
+
+  return (
+    <span className={className}>
+      {sign} {prefix}
+      {integerPart}
+      {decimalPart && (
+        <span className="text-[0.6em] opacity-60 ml-[1px]">,{decimalPart}</span>
+      )}
+    </span>
+  );
+};
+
+// SVG PREMIUM ASSET TYPES (Nama tetap bahasa Indonesia agar tidak merusak data database lama)
 const ASSET_TYPES = [
-  { name: "Saham Indonesia", icon: "📈" },
-  { name: "Saham US", icon: "🗽" },
-  { name: "Crypto", icon: "₿" },
-  { name: "Reksadana", icon: "📊" },
-  { name: "Emas", icon: "🥇" },
-  { name: "Lainnya", icon: "💎" },
+  {
+    name: "Saham Indonesia",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+        <polyline points="16 7 22 7 22 13" />
+      </svg>
+    ),
+  },
+  {
+    name: "Saham US",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+        <path d="M2 12h20" />
+      </svg>
+    ),
+  },
+  {
+    name: "Crypto",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17" />
+        <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2-.9 2-2s-.9-2-2-2H8" />
+        <path d="M15 5h-2a2 2 0 1 0 0 4h3a2 2 0 1 0 0-4Z" />
+        <line x1="9" x2="9" y1="7" y2="3" />
+        <line x1="13" x2="13" y1="11" y2="7" />
+      </svg>
+    ),
+  },
+  {
+    name: "Reksadana",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+        <path d="M22 12A10 10 0 0 0 12 2v10z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Emas",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Lainnya",
+    icon: (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M6 3h12l4 6-10 13L2 9Z" />
+        <path d="M11 3 8 9l4 13" />
+        <path d="M13 3l3 6-4 13" />
+        <path d="M2 9h20" />
+      </svg>
+    ),
+  },
 ];
 
 export default function InvestmentsPage() {
@@ -28,7 +192,7 @@ export default function InvestmentsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState("");
 
-  // State untuk Smart Form (Pilih Aset Existing / Baru)
+  // State untuk Smart Form
   const [addMode, setAddMode] = useState("new");
 
   // Form State
@@ -60,17 +224,16 @@ export default function InvestmentsPage() {
     fetchAssets();
   }, []);
 
-  // --- EFEK SMART FORM ---
-  // Kalau dropdown addMode berubah (Pilih aset existing), auto-fill datanya!
+  // --- EFEK SMART FORM (LOGIK AMAN) ---
   useEffect(() => {
     if (addMode !== "new" && !isEditing) {
       const selected = assets.find((a) => a.id === addMode);
       if (selected) {
         setAssetType(selected.asset_type);
         setAssetName(selected.asset_name);
-        setCurrentPrice(selected.current_price.toString()); // Auto suggest harga pasar terakhir
-        setQuantity(""); // Kosongin buat batch baru
-        setAvgBuyPrice(""); // Kosongin buat batch baru
+        setCurrentPrice(selected.current_price.toString());
+        setQuantity("");
+        setAvgBuyPrice("");
       }
     } else if (addMode === "new" && !isEditing) {
       setAssetType("Saham Indonesia");
@@ -81,10 +244,10 @@ export default function InvestmentsPage() {
     }
   }, [addMode, isEditing, assets]);
 
-  // --- FUNGSI TARIK HARGA LIVE DARI API LOKAL ---
+  // --- FUNGSI TARIK HARGA LIVE DARI API LOKAL (LOGIK AMAN) ---
   const handleSyncPrices = async () => {
     setIsSyncing(true);
-    const toastId = toast.loading("Menarik data pasar global...");
+    const toastId = toast.loading("Syncing global market data...");
 
     try {
       const res = await fetch("/api/sync-prices", {
@@ -101,7 +264,7 @@ export default function InvestmentsPage() {
       }
 
       if (!data.updatedPrices || data.updatedPrices.length === 0) {
-        toast.info("Tidak ada update.", {
+        toast.info("No updates found.", {
           description: data.message,
           id: toastId,
         });
@@ -122,13 +285,13 @@ export default function InvestmentsPage() {
       }
 
       toast.success("Market Synced! 🌍", {
-        description: `${successCount} aset diupdate ke harga terbaru.`,
+        description: `${successCount} assets updated to latest prices.`,
         id: toastId,
       });
       fetchAssets();
       refreshGlobalData();
     } catch (error) {
-      toast.error("Gagal konek ke server API.", { id: toastId });
+      toast.error("Failed to connect to API server.", { id: toastId });
     }
     setIsSyncing(false);
   };
@@ -136,7 +299,7 @@ export default function InvestmentsPage() {
   const openAddModal = () => {
     setIsEditing(false);
     setEditId("");
-    setAddMode("new"); // Default ke tambah baru
+    setAddMode("new");
     setAssetType("Saham Indonesia");
     setAssetName("");
     setQuantity("");
@@ -148,7 +311,7 @@ export default function InvestmentsPage() {
   const openEditModal = (a: any) => {
     setIsEditing(true);
     setEditId(a.id);
-    setAddMode("new"); // Biar dropdown hilang saat mode edit murni
+    setAddMode("new");
     setAssetType(a.asset_type);
     setAssetName(a.asset_name);
     setQuantity(a.quantity.toString());
@@ -166,7 +329,6 @@ export default function InvestmentsPage() {
     if (!user) return;
 
     if (isEditing) {
-      // 1. MODE EDIT MURNI (Update 1 Baris)
       const payload = {
         asset_type: assetType,
         asset_name: assetName,
@@ -179,11 +341,10 @@ export default function InvestmentsPage() {
         .from("fyntra_assets")
         .update(payload)
         .eq("id", editId);
-      if (error) toast.error("Gagal Update", { description: error.message });
-      else toast.success("Aset Diperbarui!");
+      if (error) toast.error("Update Failed", { description: error.message });
+      else toast.success("Asset Updated Successfully!");
     } else {
       if (addMode === "new") {
-        // 2. MODE BIKIN ASET BARU (Insert)
         const payload = {
           user_id: user.id,
           asset_type: assetType,
@@ -194,11 +355,9 @@ export default function InvestmentsPage() {
           updated_at: new Date().toISOString(),
         };
         const { error } = await supabase.from("fyntra_assets").insert(payload);
-        if (error)
-          toast.error("Gagal Menambah", { description: error.message });
-        else toast.success("Aset Baru Berhasil Ditambahkan!");
+        if (error) toast.error("Add Failed", { description: error.message });
+        else toast.success("New Asset Added!");
       } else {
-        // 3. MODE MERGE SULTAN (Hitung Rata-rata)
         const existing = assets.find((a) => a.id === addMode);
         if (existing) {
           const qLama = Number(existing.quantity);
@@ -206,14 +365,13 @@ export default function InvestmentsPage() {
           const qBaru = Number(quantity);
           const pBaru = Number(avgBuyPrice);
 
-          // Rumus Sakti Modal Rata-rata (Weighted Average)
           const totalUnitBaru = qLama + qBaru;
           const avgPriceBaru = (qLama * pLama + qBaru * pBaru) / totalUnitBaru;
 
           const payload = {
             quantity: totalUnitBaru,
             avg_buy_price: avgPriceBaru,
-            current_price: Number(currentPrice), // Update harga market terbarunya juga
+            current_price: Number(currentPrice),
             updated_at: new Date().toISOString(),
           };
 
@@ -222,11 +380,8 @@ export default function InvestmentsPage() {
             .update(payload)
             .eq("id", addMode);
           if (error)
-            toast.error("Gagal Menggabungkan Aset", {
-              description: error.message,
-            });
-          else
-            toast.success("Portofolio Berhasil Digabungkan & Dihitung Ulang!");
+            toast.error("Merge Failed", { description: error.message });
+          else toast.success("Portfolio Successfully Merged & Recalculated!");
         }
       }
     }
@@ -238,20 +393,19 @@ export default function InvestmentsPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Hapus aset ${name} dari portofolio?`)) return;
+    if (!confirm(`Delete ${name} from your portfolio?`)) return;
     const { error } = await supabase
       .from("fyntra_assets")
       .delete()
       .eq("id", id);
-    if (error) toast.error("Gagal Menghapus");
+    if (error) toast.error("Delete Failed");
     else {
-      toast.success("Aset Dihapus!");
+      toast.success("Asset Deleted!");
       refreshGlobalData();
       fetchAssets();
     }
   };
 
-  // Kalkulasi Total Portofolio
   const portfolioStats = useMemo(() => {
     let totalCapital = 0;
     let totalValue = 0;
@@ -265,15 +419,19 @@ export default function InvestmentsPage() {
   }, [assets]);
 
   return (
-    <div className="animate-in fade-in duration-700 pb-20 bg-transparent transition-all">
+    <div
+      className={`${inter.className} animate-in fade-in duration-700 pb-20 bg-transparent transition-all`}
+    >
       {/* HEADER DENGAN TOMBOL SYNC */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase transition-colors duration-300">
+          <h2
+            className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
+          >
             Portfolio & Assets
           </h2>
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-1 italic transition-colors duration-300">
-            Pusat Investasi Faizax
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-1 transition-colors duration-300">
+            Faizax Wealth Center
           </p>
         </div>
 
@@ -281,60 +439,117 @@ export default function InvestmentsPage() {
           <button
             onClick={handleSyncPrices}
             disabled={isSyncing}
-            className="flex-1 md:flex-none px-6 py-4 bg-emerald-500 dark:bg-emerald-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 md:flex-none px-6 py-4 bg-emerald-500 dark:bg-emerald-500/10 text-white dark:text-emerald-400 dark:border dark:border-emerald-500/20 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isSyncing ? "Syncing..." : "🔄 Sync Prices"}
+            {isSyncing ? (
+              "Syncing..."
+            ) : (
+              <>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={isSyncing ? "animate-spin" : ""}
+                >
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 21h5v-5" />
+                </svg>{" "}
+                Sync Prices
+              </>
+            )}
           </button>
           <button
             onClick={openAddModal}
-            className="flex-1 md:flex-none px-8 py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center"
+            className="flex-1 md:flex-none px-8 py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2"
           >
-            + Add Asset
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            Add Asset
           </button>
         </div>
       </div>
 
-      {/* PORTFOLIO SUMMARY CARD */}
-      <div className="bg-slate-900 dark:bg-slate-900/50 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden mb-10 border border-transparent dark:border-slate-800 transition-all duration-300">
+      {/* PORTFOLIO SUMMARY CARD (GLASSMORPHISM) */}
+      <div className="bg-slate-900 dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden mb-10 border border-transparent dark:border-slate-800/50 transition-all duration-300">
+        <div className="absolute top-[-30%] left-[-10%] w-[60%] h-[60%] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-6">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500 mb-2 italic">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 dark:text-blue-300 mb-2">
               Total Market Value
             </p>
-            <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter">
-              Rp {portfolioStats.totalValue.toLocaleString("id-ID")}
+            <h2
+              className={`${spaceGrotesk.className} text-4xl md:text-5xl font-bold tracking-tight`}
+            >
+              <FormattedMoney amount={portfolioStats.totalValue} />
             </h2>
-            <p className="text-xs font-bold text-slate-400 mt-2 uppercase tracking-widest">
-              Modal: Rp {portfolioStats.totalCapital.toLocaleString("id-ID")}
+            <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest flex items-center gap-2">
+              Capital:{" "}
+              <FormattedMoney
+                amount={portfolioStats.totalCapital}
+                className="text-slate-300"
+              />
             </p>
           </div>
           <div
-            className={`px-6 py-4 rounded-2xl border ${portfolioStats.pnl >= 0 ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-rose-500/10 border-rose-500/20 text-rose-400"}`}
+            className={`px-6 py-4 rounded-2xl border backdrop-blur-md ${portfolioStats.pnl >= 0 ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-rose-500/10 border-rose-500/20 text-rose-400"}`}
           >
-            <p className="text-[9px] font-black uppercase tracking-widest mb-1">
+            <p className="text-[9px] font-bold uppercase tracking-widest mb-1">
               Total Return
             </p>
-            <p className="text-xl font-black italic">
-              {portfolioStats.pnl >= 0 ? "+" : ""}Rp{" "}
-              {portfolioStats.pnl.toLocaleString("id-ID")} (
+            <p className={`${spaceGrotesk.className} text-xl font-bold`}>
+              <FormattedMoney amount={portfolioStats.pnl} showSign={true} /> (
               {portfolioStats.pnl >= 0 ? "+" : ""}
               {portfolioStats.pnlPercentage.toFixed(2)}%)
             </p>
           </div>
         </div>
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl z-0 pointer-events-none"></div>
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl z-0 pointer-events-none"></div>
       </div>
 
       {/* ASSET LIST (PROFESSIONAL VIEW) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full p-20 text-center font-black text-slate-300 dark:text-slate-700 animate-pulse italic uppercase tracking-widest text-sm bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 transition-colors">
-            Memuat Portofolio...
+          <div className="col-span-full p-20 text-center font-bold text-slate-400 animate-pulse uppercase tracking-widest text-xs bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl rounded-[3rem] border border-slate-100 dark:border-slate-800/50 transition-colors">
+            Loading Portfolio...
           </div>
         ) : assets.length > 0 ? (
           assets.map((a) => {
-            const assetIcon =
-              ASSET_TYPES.find((t) => t.name === a.asset_type)?.icon || "💎";
+            const assetIcon = ASSET_TYPES.find((t) => t.name === a.asset_type)
+              ?.icon || (
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 3h12l4 6-10 13L2 9Z" />
+                <path d="M11 3 8 9l4 13" />
+                <path d="M13 3l3 6-4 13" />
+                <path d="M2 9h20" />
+              </svg>
+            );
             const capital = Number(a.quantity) * Number(a.avg_buy_price);
             const marketValue = Number(a.quantity) * Number(a.current_price);
             const pnl = marketValue - capital;
@@ -344,32 +559,34 @@ export default function InvestmentsPage() {
             return (
               <div
                 key={a.id}
-                className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800"
+                className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm relative overflow-hidden group transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800"
               >
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-xl shadow-sm transition-colors">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm transition-colors">
                       {assetIcon}
                     </div>
                     <div>
-                      <h3 className="font-black text-lg text-slate-900 dark:text-white uppercase italic tracking-tighter transition-colors">
+                      <h3
+                        className={`${spaceGrotesk.className} font-bold text-lg text-slate-900 dark:text-white uppercase tracking-tight transition-colors`}
+                      >
                         {a.asset_name}
                       </h3>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest transition-colors">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest transition-colors mt-0.5">
                         {a.asset_type}
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex flex-col gap-1.5 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => openEditModal(a)}
-                      className="text-[9px] font-black uppercase text-blue-500 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md"
+                      className="text-[9px] font-bold uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-500/10 dark:border dark:border-blue-500/20 px-2.5 py-1 rounded-md transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(a.id, a.asset_name)}
-                      className="text-[9px] font-black uppercase text-rose-500 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-md"
+                      className="text-[9px] font-bold uppercase tracking-widest text-rose-500 bg-rose-50 dark:bg-rose-500/10 dark:border dark:border-rose-500/20 px-2.5 py-1 rounded-md transition-colors"
                     >
                       Del
                     </button>
@@ -377,43 +594,45 @@ export default function InvestmentsPage() {
                 </div>
 
                 {/* THE PROFESSIONAL VIEW LAYOUT */}
-                <div className="space-y-3">
-                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800 pb-2 transition-colors">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <div className="space-y-3 pt-2">
+                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800/50 pb-2 transition-colors">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Live Price
                     </span>
-                    <span className="text-sm font-black italic dark:text-white transition-colors">
-                      Rp {Number(a.current_price).toLocaleString("id-ID")}
+                    <span className="text-[11px] font-bold dark:text-white transition-colors">
+                      <FormattedMoney amount={Number(a.current_price)} />
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800 pb-2 transition-colors">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800/50 pb-2 transition-colors">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Avg Price
                     </span>
-                    <span className="text-sm font-black italic text-slate-500 dark:text-slate-400 transition-colors">
-                      Rp {Number(a.avg_buy_price).toLocaleString("id-ID")}
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 transition-colors">
+                      <FormattedMoney amount={Number(a.avg_buy_price)} />
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800 pb-2 transition-colors">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <div className="flex justify-between border-b border-slate-50 dark:border-slate-800/50 pb-2 transition-colors">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Balance
                     </span>
-                    <span className="text-sm font-black italic dark:text-white transition-colors">
-                      {a.quantity} Unit
+                    <span className="text-[11px] font-bold dark:text-white transition-colors">
+                      {a.quantity} Units
                     </span>
                   </div>
-                  <div className="flex justify-between pt-1 items-end">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-1">
+                  <div className="flex justify-between pt-2 items-end">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pb-1">
                       Now Value
                     </span>
                     <div className="text-right">
-                      <span className="block text-xl font-black italic dark:text-white transition-colors">
-                        Rp {marketValue.toLocaleString("id-ID")}
+                      <span
+                        className={`${spaceGrotesk.className} block text-xl font-bold dark:text-white transition-colors leading-tight`}
+                      >
+                        <FormattedMoney amount={marketValue} />
                       </span>
                       <span
-                        className={`text-[10px] font-black uppercase tracking-widest ${isProfit ? "text-emerald-500" : "text-rose-500"}`}
+                        className={`text-[9px] font-bold uppercase tracking-widest mt-1 inline-block ${isProfit ? "text-emerald-500" : "text-rose-500"}`}
                       >
-                        {isProfit ? "+" : ""}Rp {pnl.toLocaleString("id-ID")} (
+                        <FormattedMoney amount={pnl} showSign={true} /> (
                         {isProfit ? "+" : ""}
                         {pnlPercent.toFixed(2)}%)
                       </span>
@@ -424,34 +643,36 @@ export default function InvestmentsPage() {
             );
           })
         ) : (
-          <div className="col-span-full p-20 text-center bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm text-slate-300 dark:text-slate-700 font-black italic uppercase transition-colors">
-            Belum ada aset investasi.
+          <div className="col-span-full p-20 text-center bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl rounded-[3rem] border border-slate-100 dark:border-slate-800/50 shadow-sm text-slate-400 font-bold uppercase tracking-widest text-xs transition-colors">
+            No investment assets found.
           </div>
         )}
       </div>
 
-      {/* MODAL SMART FORM (DARK MODE READY) */}
+      {/* MODAL SMART FORM (TANPA SCROLLBAR JELEK) */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 transition-all">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-10 rounded-[3rem] shadow-2xl animate-in zoom-in duration-300 border border-transparent dark:border-slate-800 transition-colors max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-2xl font-black italic mb-6 text-slate-900 dark:text-white transition-colors">
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
+          <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
+            <h3
+              className={`${spaceGrotesk.className} text-xl font-bold mb-6 text-slate-900 dark:text-white uppercase transition-colors`}
+            >
               {isEditing ? "Edit Asset" : "Add Asset"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* DROPDOWN SMART FORM (Hanya Muncul Saat Tambah Baru) */}
+              {/* DROPDOWN SMART FORM */}
               {!isEditing && (
-                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                  <label className="block text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2 ml-1">
-                    Operasi Aset
+                <div className="mb-6 p-4 bg-blue-50/50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
+                  <label className="block text-[9px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2 ml-1">
+                    Asset Operation
                   </label>
                   <select
-                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold dark:text-white outline-none text-sm transition-colors cursor-pointer"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 rounded-xl font-bold dark:text-white outline-none text-xs transition-colors cursor-pointer"
                     value={addMode}
                     onChange={(e) => setAddMode(e.target.value)}
                   >
-                    <option value="new">✨ Buat Aset Baru</option>
+                    <option value="new">✨ Create New Asset</option>
                     {assets.length > 0 && (
-                      <optgroup label="Tambah Saldo Aset Lama:">
+                      <optgroup label="Add Balance to Existing Asset:">
                         {assets.map((a) => (
                           <option key={a.id} value={a.id}>
                             🔄 {a.asset_name} ({a.asset_type})
@@ -463,21 +684,21 @@ export default function InvestmentsPage() {
                 </div>
               )}
 
-              {/* INPUT KATEGORI & NAMA (Dikunci kalau pilih aset existing) */}
+              {/* INPUT KATEGORI & NAMA */}
               <div>
-                <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
-                  Kategori Aset
+                <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
+                  Asset Category
                 </label>
                 <select
                   required
-                  className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors disabled:opacity-50"
+                  className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors disabled:opacity-50"
                   value={assetType}
                   onChange={(e) => setAssetType(e.target.value)}
                   disabled={addMode !== "new" && !isEditing}
                 >
                   {ASSET_TYPES.map((t) => (
                     <option key={t.name} value={t.name}>
-                      {t.icon} {t.name}
+                      {t.name}
                     </option>
                   ))}
                 </select>
@@ -486,8 +707,8 @@ export default function InvestmentsPage() {
               <input
                 required
                 type="text"
-                placeholder="Nama Aset (Misal: BBRI / Bitcoin)"
-                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors disabled:opacity-50"
+                placeholder="Asset Name (e.g., BBRI / BTC)"
+                className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors disabled:opacity-50"
                 value={assetName}
                 onChange={(e) => setAssetName(e.target.value)}
                 disabled={addMode !== "new" && !isEditing}
@@ -495,33 +716,33 @@ export default function InvestmentsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
+                  <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
                     {addMode !== "new" && !isEditing
-                      ? "+ Tambah Unit"
-                      : "Jumlah (Unit)"}
+                      ? "+ Add Units"
+                      : "Quantity (Units)"}
                   </label>
                   <input
                     required
                     type="number"
                     step="any"
                     placeholder="0"
-                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
+                  <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 ml-1 transition-colors">
                     {addMode !== "new" && !isEditing
-                      ? "Harga Beli Baru"
-                      : "Avg Buy Price"}
+                      ? "New Buy Price"
+                      : "Average Buy Price"}
                   </label>
                   <input
                     required
                     type="number"
                     step="any"
                     placeholder="0"
-                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold dark:text-white outline-none transition-colors"
                     value={avgBuyPrice}
                     onChange={(e) => setAvgBuyPrice(e.target.value)}
                   />
@@ -529,15 +750,15 @@ export default function InvestmentsPage() {
               </div>
 
               <div>
-                <label className="block text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2 ml-1">
+                <label className="block text-[9px] font-bold uppercase tracking-widest text-emerald-500 mb-2 ml-1">
                   Current Market Price (Rp)
                 </label>
                 <input
                   required
                   type="number"
                   step="any"
-                  placeholder="Harga pasar sekarang"
-                  className="w-full px-6 py-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-2xl font-bold text-emerald-700 dark:text-emerald-400 outline-none transition-colors"
+                  placeholder="Market price today"
+                  className="w-full px-6 py-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl font-bold text-emerald-600 dark:text-emerald-400 outline-none transition-colors"
                   value={currentPrice}
                   onChange={(e) => setCurrentPrice(e.target.value)}
                 />
@@ -547,19 +768,19 @@ export default function InvestmentsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 font-black text-[10px] uppercase text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  className="flex-1 font-bold text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                  className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-900/20 active:scale-95 transition-all disabled:opacity-50"
                 >
                   {isSubmitting
                     ? "Processing..."
                     : addMode !== "new" && !isEditing
-                      ? "Merge Aset"
+                      ? "Merge Asset"
                       : "Save Asset"}
                 </button>
               </div>
