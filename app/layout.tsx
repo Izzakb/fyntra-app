@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { FyntraProvider } from "@/context/FyntraContext"; // 💡 IMPORT PROVIDER KAMU
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,12 +35,19 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased transition-colors duration-300`}
       >
+        <Script
+          src="https://app.sandbox.midtrans.com/snap/snap.js"
+          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+          strategy="beforeInteractive"
+        />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
         >
-          {children}
+          {/* 💡 BUNGKUS CHILDREN DENGAN PROVIDER DI SINI */}
+          <FyntraProvider>{children}</FyntraProvider>
         </ThemeProvider>
       </body>
     </html>

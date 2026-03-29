@@ -17,7 +17,7 @@ export interface Wallet {
   is_default: boolean;
 }
 
-// 2. Tipe data untuk Aset (Investment) - NEW!
+// 2. Tipe data untuk Aset (Investment)
 export interface Asset {
   id: string;
   asset_type: string;
@@ -31,18 +31,19 @@ export interface Asset {
 interface FyntraContextType {
   fullName: string;
   avatarUrl: string | null;
+  isPro: boolean; // 💡 NEW: Status Langganan
   loadingGlobal: boolean;
 
   // -- CASH SECTION --
-  balance: number; // Total Cash (BCA + Dompet Utama + dll)
+  balance: number;
   wallets: Wallet[];
 
-  // -- INVESTMENT SECTION -- NEW!
-  totalInvestment: number; // (Qty * Current Price) dari semua aset
+  // -- INVESTMENT SECTION --
+  totalInvestment: number;
   assets: Asset[];
 
-  // -- MASTER WEALTH -- NEW!
-  netWorth: number; // Total Cash + Total Investment
+  // -- MASTER WEALTH --
+  netWorth: number;
 
   refreshGlobalData: () => Promise<void>;
 }
@@ -52,33 +53,38 @@ const FyntraContext = createContext<FyntraContextType | undefined>(undefined);
 export function FyntraProvider({ children }: { children: ReactNode }) {
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isPro, setIsPro] = useState(false); // 💡 NEW: Default False
   const [loadingGlobal, setLoadingGlobal] = useState(true);
 
   // States untuk Keuangan
-  const [balance, setBalance] = useState(0); // Total Cash
+  const [balance, setBalance] = useState(0);
   const [wallets, setWallets] = useState<Wallet[]>([]);
-  const [totalInvestment, setTotalInvestment] = useState(0); // Total Invest
-  const [assets, setAssets] = useState<Asset[]>([]); // Daftar Aset
-  const [netWorth, setNetWorth] = useState(0); // Master Asset
+  const [totalInvestment, setTotalInvestment] = useState(0);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [netWorth, setNetWorth] = useState(0);
 
   const refreshGlobalData = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
     if (!user) {
       setLoadingGlobal(false);
       return;
     }
 
-    // 1. Ambil Profil & Avatar
+    // 1. Ambil Profil, Avatar, & Status Pro
+    // 💡 Pastikan kolom 'is_pro' sudah ada di tabel 'profiles' kamu
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, avatar_url")
+      .select("full_name, avatar_url, is_pro")
       .eq("id", user.id)
       .single();
 
     if (profile) {
-      setFullName(profile.full_name);
+      setFullName(profile.full_name || "");
+      setIsPro(profile.is_pro || false); // 💡 Update Status Pro di sini
+
       if (profile.avatar_url) {
         const { data: imgData } = await supabase.storage
           .from("avatars")
@@ -104,7 +110,7 @@ export function FyntraProvider({ children }: { children: ReactNode }) {
       setBalance(currentCash);
     }
 
-    // 3. Ambil DATA ASSETS (fyntra_assets) - NEW!
+    // 3. Ambil DATA ASSETS (fyntra_assets)
     const { data: userAssets } = await supabase
       .from("fyntra_assets")
       .select("*")
@@ -114,7 +120,6 @@ export function FyntraProvider({ children }: { children: ReactNode }) {
     let currentInvestment = 0;
     if (userAssets) {
       setAssets(userAssets);
-      // Kalkulasi Nilai Aset: Qty * Current Price
       currentInvestment = userAssets.reduce(
         (total, a) => total + Number(a.quantity) * Number(a.current_price),
         0,
@@ -136,6 +141,7 @@ export function FyntraProvider({ children }: { children: ReactNode }) {
     <FyntraContext.Provider
       value={{
         fullName,
+        isPro, // 💡 Bagikan status Pro ke seluruh App
         balance,
         wallets,
         totalInvestment,

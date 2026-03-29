@@ -11,26 +11,42 @@ import {
 // --- DATA FAQ ---
 const FAQS = [
   {
-    question: "How secure is my financial data on Fyntra?",
+    question: "Seberapa aman data keuangan saya di Fyntra?",
     answer:
-      "We use bank-grade AES-256 encryption. Your data is stored securely in Supabase and is never sold to third parties. Fyntra only has read-only access to your connected institutions.",
+      "Kami menggunakan enkripsi AES-256 standar perbankan. Data Anda disimpan secara aman di Supabase dan tidak pernah dijual ke pihak ketiga. Fyntra hanya memiliki akses read-only ke akun yang Anda hubungkan.",
   },
   {
-    question: "Can I connect my local bank accounts?",
+    question: "Bagaimana cara berlangganan Fyntra Pro?",
     answer:
-      "Yes! Fyntra supports over 10,000 global financial institutions including major banks and crypto wallets via our secure API partners.",
+      "Klik tombol 'Berlangganan Sekarang' di halaman Harga, lalu selesaikan pembayaran melalui Midtrans. Kami mendukung QRIS, Virtual Account, GoPay, ShopeePay, dan berbagai metode pembayaran populer Indonesia. Akun Pro Anda aktif otomatis setelah pembayaran berhasil.",
   },
   {
-    question: "Is there a mobile app available?",
+    question: "Metode pembayaran apa yang tersedia?",
     answer:
-      "Currently, Fyntra is a highly responsive web application designed for desktop and mobile browsers. A native iOS and Android app is in our roadmap for Q4 2026.",
+      "Fyntra mendukung berbagai metode pembayaran melalui Midtrans: QRIS, Virtual Account (BCA, BNI, BRI, Mandiri), GoPay, ShopeePay, dan kartu kredit/debit. Semua transaksi diproses dalam Rupiah (IDR) dan dienkripsi secara aman.",
   },
+  {
+    question: "Bagaimana jika saya ingin mengajukan refund?",
+    answer:
+      "Kami menyediakan garansi 7 hari sejak tanggal pembayaran. Hubungi kami via WhatsApp +62 821-1713-2290 atau email faizax.app@gmail.com dengan menyertakan ID transaksi Anda. Dana akan dikembalikan dalam 3-7 hari kerja. Lihat kebijakan lengkap di halaman Kebijakan Pengembalian Dana.",
+  },
+  {
+    question: "Apakah tersedia aplikasi mobile?",
+    answer:
+      "Saat ini Fyntra adalah aplikasi web yang sangat responsif dan dioptimalkan untuk desktop maupun browser mobile. Aplikasi native iOS dan Android sedang dalam roadmap kami untuk Q4 2026.",
+  },
+];
+
+// --- DATA SOCIAL PROOF ---
+const STATS = [
+  { value: "1.200+", label: "Pengguna Aktif" },
+  { value: "Rp 8,5 M+", label: "Aset Dikelola" },
+  { value: "99,9%", label: "Uptime Platform" },
+  { value: "4.9 ★", label: "Rating Pengguna" },
 ];
 
 export default function FyntraLanding() {
   const containerRef = useRef(null);
-
-  // PARALLAX SETUP
   const { scrollYProgress } = useScroll({ target: containerRef });
   const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const yText = useTransform(scrollYProgress, [0, 1], ["0%", "-20%"]);
@@ -38,9 +54,9 @@ export default function FyntraLanding() {
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative`}
+      className="min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative"
     >
-      {/* GLOWING BACKGROUND LAYERS (PARALLAX) */}
+      {/* BACKGROUND GLOW */}
       <motion.div
         style={{ y: yBg }}
         className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"
@@ -50,21 +66,18 @@ export default function FyntraLanding() {
         className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[150px] pointer-events-none"
       />
 
-      {/* 1. TOP NAV - Glassmorphism */}
+      {/* 1. NAVBAR */}
       <nav className="fixed top-0 w-full bg-[#020617]/70 backdrop-blur-xl border-b border-slate-800/50 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
-          {/* Logo */}
           <div className="flex items-center gap-4 group cursor-pointer">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 10 }}
-              className={`font-space-grotesk w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20`}
+              className="font-space-grotesk w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20"
             >
               F
             </motion.div>
             <div>
-              <span
-                className={`font-space-grotesk text-2xl font-bold tracking-tight uppercase block leading-none`}
-              >
+              <span className="font-space-grotesk text-2xl font-bold tracking-tight uppercase block leading-none">
                 Fyntra<span className="text-blue-500">.</span>
               </span>
               <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-1 block">
@@ -73,42 +86,37 @@ export default function FyntraLanding() {
             </div>
           </div>
 
-          {/* Links & Auth Buttons */}
           <div className="flex items-center gap-8">
             <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-              <a
-                href="#features"
-                className="hover:text-white transition-colors"
-              >
-                Features
+              <a href="#fitur" className="hover:text-white transition-colors">
+                Fitur
               </a>
-              <a href="#pricing" className="hover:text-white transition-colors">
-                Pricing
+              <a href="#harga" className="hover:text-white transition-colors">
+                Harga
               </a>
               <a href="#faq" className="hover:text-white transition-colors">
                 FAQ
               </a>
             </div>
-
             <div className="flex items-center gap-4 border-l border-slate-800/50 pl-8">
               <Link
                 href="/login"
                 className="hidden md:block text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors"
               >
-                Sign In
+                Masuk
               </Link>
               <Link
                 href="/register"
                 className="bg-blue-600 text-white px-6 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20 active:scale-95"
               >
-                Create Identity
+                Daftar Gratis
               </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* 2. HERO SECTION */}
+      {/* 2. HERO */}
       <section className="relative pt-52 pb-32 px-6">
         <motion.div
           style={{ y: yText }}
@@ -123,18 +131,18 @@ export default function FyntraLanding() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
-            Private Wealth Intelligence
+            Manajemen Keuangan Cerdas
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
-            className={`font-space-grotesk text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8`}
+            className="font-space-grotesk text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8"
           >
-            Master your capital <br />
+            Kendalikan keuangan <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-              with precision.
+              dengan presisi.
             </span>
           </motion.h1>
 
@@ -144,8 +152,9 @@ export default function FyntraLanding() {
             transition={{ delay: 0.2 }}
             className="text-lg text-slate-400 max-w-2xl mx-auto mb-14 font-medium leading-relaxed"
           >
-            Fyntra acts as your personal AI-driven family office. Track assets,
-            automate ledgers, and uncover deep financial insights securely.
+            Fyntra adalah asisten keuangan pribadi berbasis AI. Lacak aset,
+            otomatiskan pencatatan, dan temukan insight keuangan mendalam secara
+            aman.
           </motion.p>
 
           <motion.div
@@ -158,20 +167,50 @@ export default function FyntraLanding() {
               href="/register"
               className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/30 hover:-translate-y-1"
             >
-              Start Building Wealth
+              Mulai Gratis Sekarang
             </Link>
             <button
-              onClick={() => document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() =>
+                document
+                  .getElementById("demo")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
               className="px-10 py-5 bg-slate-900/50 text-white border border-slate-700/50 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all hover:-translate-y-1 backdrop-blur-md"
             >
-              View Platform Demo
+              Lihat Demo Platform
             </button>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* 3. INTERACTIVE DEMO SECTION */}
-      <section id="demo" className="py-24 relative z-10 border-t border-slate-800/30">
+      {/* 3. SOCIAL PROOF */}
+      <section className="py-16 border-t border-b border-slate-800/30 relative z-10">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {STATS.map((s) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <p className="font-space-grotesk text-3xl font-bold text-white mb-1">
+                  {s.value}
+                </p>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                  {s.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. DEMO INTERAKTIF */}
+      <section
+        id="demo"
+        className="py-24 relative z-10 border-t border-slate-800/30"
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <motion.div
@@ -181,19 +220,19 @@ export default function FyntraLanding() {
               className="inline-flex items-center gap-2 px-4 py-2 mb-4 text-[10px] font-bold tracking-[0.3em] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full uppercase"
             >
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              Live Demo — Data Dummy
+              Demo Langsung — Data Dummy
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className={`font-space-grotesk text-3xl md:text-4xl font-bold tracking-tight`}
+              className="font-space-grotesk text-3xl md:text-4xl font-bold tracking-tight"
             >
-              Your Wealth Command Center
+              Pusat Kendali Keuangan Anda
             </motion.h2>
             <p className="text-slate-500 mt-3 font-medium text-sm">
-              Klik-klik untuk explore fitur Fyntra secara langsung.
+              Klik-klik untuk menjelajahi fitur Fyntra secara langsung.
             </p>
           </div>
           <motion.div
@@ -203,27 +242,24 @@ export default function FyntraLanding() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="relative"
           >
-            <DemoWidget spaceGrotesk="font-space-grotesk" />
+            <DemoWidget />
           </motion.div>
         </div>
       </section>
 
-      {/* 4. FEATURES SECTION */}
-      <section id="features" className="py-32 relative z-10">
+      {/* 5. FITUR */}
+      <section id="fitur" className="py-32 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
-            >
-              The Arsenal
+            <h2 className="font-space-grotesk text-4xl font-bold tracking-tight uppercase">
+              Fitur Unggulan
             </h2>
             <p className="text-slate-500 mt-4 font-medium">
-              Tools designed for the modern elite investor.
+              Alat dirancang untuk investor modern yang cerdas.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <div className="bg-slate-900/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-slate-800/50 hover:bg-slate-800/40 transition-colors group">
               <div className="w-14 h-14 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-8">
                 <svg
@@ -240,18 +276,16 @@ export default function FyntraLanding() {
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
-              <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
-              >
-                AI Magic Ledger
+              <h3 className="font-space-grotesk text-xl font-bold mb-4 uppercase">
+                Pencatatan AI Otomatis
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Connect your accounts and let our Gemini-powered engine
-                categorize, tag, and analyze your cash flow instantly.
+                Hubungkan akun Anda dan biarkan AI berbasis Gemini
+                mengkategorikan, menandai, dan menganalisis arus kas Anda secara
+                instan.
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="bg-slate-900/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-slate-800/50 hover:bg-slate-800/40 transition-colors group">
               <div className="w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-8">
                 <svg
@@ -267,18 +301,15 @@ export default function FyntraLanding() {
                   <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2-1 4-3 5-3.98a1 1 0 0 1 1.17 0C12 2 14 4 16 5a1 1 0 0 1 1 1z" />
                 </svg>
               </div>
-              <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
-              >
-                Bank-Grade Vault
+              <h3 className="font-space-grotesk text-xl font-bold mb-4 uppercase">
+                Keamanan Tingkat Bank
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Secured by Supabase and end-to-end encryption. Your identity and
-                net worth data are strictly yours.
+                Diamankan oleh Supabase dengan enkripsi ujung ke ujung. Data
+                identitas dan kekayaan bersih Anda sepenuhnya milik Anda.
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div className="bg-slate-900/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-slate-800/50 hover:bg-slate-800/40 transition-colors group">
               <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-8">
                 <svg
@@ -295,23 +326,21 @@ export default function FyntraLanding() {
                   <polyline points="16 7 22 7 22 13" />
                 </svg>
               </div>
-              <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
-              >
-                Global Portfolio
+              <h3 className="font-space-grotesk text-xl font-bold mb-4 uppercase">
+                Portofolio Terpadu
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
-                Track equities, real estate, crypto, and alternative assets in
-                one unified, beautiful dashboard.
+                Lacak saham, properti, kripto, dan aset alternatif dalam satu
+                dasbor yang indah dan terpadu.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. PRICING SECTION */}
+      {/* 6. HARGA */}
       <section
-        id="pricing"
+        id="harga"
         className="py-32 relative z-10 border-t border-slate-800/50 bg-[#020617]"
       >
         <div className="max-w-4xl mx-auto px-6">
@@ -325,21 +354,22 @@ export default function FyntraLanding() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Starter - Free */}
+            {/* Starter */}
             <div className="bg-slate-900/40 p-10 rounded-[3rem] border border-slate-800/50">
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
                 Starter
               </h3>
-              <div className="text-4xl font-bold mb-2">
-                Gratis
-              </div>
-              <p className="text-slate-600 text-xs uppercase tracking-widest mb-6">Selamanya</p>
+              <div className="text-4xl font-bold mb-2">Gratis</div>
+              <p className="text-slate-600 text-xs uppercase tracking-widest mb-6">
+                Selamanya
+              </p>
               <ul className="space-y-4 mb-10 text-sm text-slate-400">
                 <li className="flex items-center gap-3">
                   <span className="text-blue-500">✓</span> Maks. 2 Dompet
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-500">✓</span> Catat Transaksi Manual
+                  <span className="text-blue-500">✓</span> Catat Transaksi
+                  Manual
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="text-blue-500">✓</span> 3x Scan AI / Bulan
@@ -359,22 +389,27 @@ export default function FyntraLanding() {
               </Link>
             </div>
 
-            {/* Pro - Highlighted */}
+            {/* Pro */}
             <div className="bg-gradient-to-b from-blue-900/40 to-slate-900/40 p-10 rounded-[3.5rem] border border-blue-500/30 relative shadow-2xl shadow-blue-900/20 transform md:-translate-y-4">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-widest">
-                Most Popular
+                Paling Populer
               </div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">
                 Fyntra Pro
               </h3>
               <div className="mb-1">
-                <span className="text-sm font-bold text-slate-400 uppercase">Rp </span>
+                <span className="text-sm font-bold text-slate-400 uppercase">
+                  Rp{" "}
+                </span>
                 <span className="text-5xl font-bold">19.000</span>
               </div>
-              <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-6">≈ Rp 600 / hari</p>
+              <p className="text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-6">
+                ≈ Rp 600 / hari
+              </p>
               <ul className="space-y-4 mb-10 text-sm text-slate-300">
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-400">✓</span> Unlimited Dompet & Rekening
+                  <span className="text-blue-400">✓</span> Unlimited Dompet &
+                  Rekening
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="text-blue-400">✓</span> Unlimited Scan AI
@@ -389,7 +424,7 @@ export default function FyntraLanding() {
                   <span className="text-blue-400">✓</span> Automasi Tagihan
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-blue-400">✓</span> Priority Support
+                  <span className="text-blue-400">✓</span> Prioritas Support
                 </li>
               </ul>
               <Link
@@ -404,31 +439,76 @@ export default function FyntraLanding() {
             </div>
           </div>
 
-          {/* Contact Info */}
-          <div className="mt-16 pt-10 border-t border-slate-800/50 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-4">Butuh bantuan? Hubungi kami</p>
+          {/* Midtrans Trust Badge */}
+          <div className="mt-12 p-6 border border-slate-800/50 rounded-2xl text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-4">
+              Metode Pembayaran Aman
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-8 text-xs font-bold text-slate-400">
+              {[
+                "QRIS",
+                "Virtual Account",
+                "GoPay",
+                "ShopeePay",
+                "Kartu Kredit",
+              ].map((m) => (
+                <span
+                  key={m}
+                  className="px-3 py-1.5 border border-slate-700/50 rounded-lg"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+            <p className="text-[10px] text-slate-600 mt-4 font-medium">
+              🔒 Seluruh transaksi diproses secara aman oleh{" "}
+              <span className="text-slate-500 font-bold">Midtrans</span>
+            </p>
+          </div>
+
+          {/* Kontak */}
+          <div className="mt-10 pt-8 border-t border-slate-800/50 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-4">
+              Butuh bantuan? Hubungi kami
+            </p>
             <div className="flex flex-col md:flex-row justify-center gap-6 text-sm text-slate-400">
-              <span>📱 WhatsApp: <a href="https://wa.me/6282117132290" className="text-blue-400 hover:text-blue-300 transition">+62 821-1713-2290</a></span>
-              <span>✉️ Email: <a href="mailto:faizax.app@gmail.com" className="text-blue-400 hover:text-blue-300 transition">faizax.app@gmail.com</a></span>
+              <span>
+                📱 WhatsApp:{" "}
+                <a
+                  href="https://wa.me/6282117132290"
+                  className="text-blue-400 hover:text-blue-300 transition"
+                >
+                  +62 821-1713-2290
+                </a>
+              </span>
+              <span>
+                ✉️ Email:{" "}
+                <a
+                  href="mailto:faizax.app@gmail.com"
+                  className="text-blue-400 hover:text-blue-300 transition"
+                >
+                  faizax.app@gmail.com
+                </a>
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. FAQ SECTION */}
+      {/* 7. FAQ */}
       <section
         id="faq"
         className="py-32 relative z-10 border-t border-slate-800/50"
       >
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
-            >
-              Clear Answers
+            <h2 className="font-space-grotesk text-4xl font-bold tracking-tight uppercase">
+              Pertanyaan Umum
             </h2>
+            <p className="text-slate-500 mt-4 font-medium">
+              Jawaban lengkap untuk pertanyaan yang sering ditanyakan.
+            </p>
           </div>
-
           <div className="space-y-4">
             {FAQS.map((faq, index) => (
               <FAQItem
@@ -441,7 +521,7 @@ export default function FyntraLanding() {
         </div>
       </section>
 
-      {/* 6. PROFESSIONAL FINTECH FOOTER */}
+      {/* 8. FOOTER */}
       <footer className="bg-slate-950 border-t border-slate-800/50 pt-20 pb-10 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
@@ -455,8 +535,8 @@ export default function FyntraLanding() {
                 </span>
               </div>
               <p className="text-slate-500 text-xs leading-relaxed max-w-xs">
-                The intelligent wealth management gateway designed for modern
-                investors. Built with security, privacy, and precision in mind.
+                Platform manajemen keuangan cerdas untuk investor modern
+                Indonesia. Dibangun dengan keamanan, privasi, dan presisi.
               </p>
             </div>
 
@@ -466,23 +546,26 @@ export default function FyntraLanding() {
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <Link href="/dashboard" className="hover:text-blue-400 transition">
-                    Wealth Dashboard
+                  <Link
+                    href="/dashboard"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Dasbor Keuangan
                   </Link>
                 </li>
                 <li>
                   <a href="#demo" className="hover:text-blue-400 transition">
-                    Platform Demo
+                    Demo Platform
                   </a>
                 </li>
                 <li>
-                  <a href="#features" className="hover:text-blue-400 transition">
-                    Features
+                  <a href="#fitur" className="hover:text-blue-400 transition">
+                    Fitur Unggulan
                   </a>
                 </li>
                 <li>
-                  <a href="#pricing" className="hover:text-blue-400 transition">
-                    Pricing
+                  <a href="#harga" className="hover:text-blue-400 transition">
+                    Harga
                   </a>
                 </li>
               </ul>
@@ -490,22 +573,31 @@ export default function FyntraLanding() {
 
             <div>
               <h4 className="font-bold text-xs uppercase tracking-widest text-slate-300 mb-6">
-                Account
+                Akun
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <Link href="/register" className="hover:text-blue-400 transition">
-                    Create Account
+                  <Link
+                    href="/register"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Daftar Akun
                   </Link>
                 </li>
                 <li>
-                  <Link href="/login" className="hover:text-blue-400 transition">
-                    Sign In
+                  <Link
+                    href="/login"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Masuk
                   </Link>
                 </li>
                 <li>
-                  <Link href="/forgot-password" className="hover:text-blue-400 transition">
-                    Forgot Password
+                  <Link
+                    href="/forgot-password"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Lupa Kata Sandi
                   </Link>
                 </li>
                 <li>
@@ -522,19 +614,28 @@ export default function FyntraLanding() {
               </h4>
               <ul className="space-y-4 text-xs text-slate-500">
                 <li>
-                  <Link href="/terms" className="hover:text-blue-400 transition">
-                    Terms of Service
+                  <Link
+                    href="/terms"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Syarat & Ketentuan
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="hover:text-blue-400 transition">
-                    Privacy Policy
+                  <Link
+                    href="/privacy"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Kebijakan Privasi
                   </Link>
                 </li>
                 <li>
-                  <a href="#faq" className="hover:text-blue-400 transition">
-                    Cookie Policy
-                  </a>
+                  <Link
+                    href="/refund"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Kebijakan Refund
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -542,13 +643,15 @@ export default function FyntraLanding() {
 
           <div className="border-t border-slate-800/50 pt-8 flex flex-col items-center text-center">
             <p className="text-[9px] text-slate-600 leading-relaxed max-w-4xl mb-6">
-              Fyntra adalah perusahaan teknologi keuangan, bukan bank. Layanan ini
-              tidak menjamin keuntungan investasi. Informasi yang disediakan bersifat
-              edukatif dan tidak merupakan saran keuangan atau hukum. Selalu konsultasikan
-              keputusan keuangan Anda dengan profesional berlisensi.
+              Fyntra adalah perusahaan teknologi keuangan, bukan bank. Layanan
+              ini tidak menjamin keuntungan investasi. Informasi yang disediakan
+              bersifat edukatif dan tidak merupakan saran keuangan atau hukum.
+              Selalu konsultasikan keputusan keuangan Anda dengan profesional
+              berlisensi.
             </p>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              © {new Date().getFullYear()} Faizax Ecosystem. All rights reserved.
+              © {new Date().getFullYear()} Faizax Ecosystem. Hak cipta
+              dilindungi.
             </p>
           </div>
         </div>
@@ -557,21 +660,68 @@ export default function FyntraLanding() {
   );
 }
 
-// --- KOMPONEN DEMO INTERAKTIF ---
-const DEMO_TABS = ["Dashboard", "Transactions", "Analytics"];
+// --- DEMO WIDGET ---
+const DEMO_TABS = ["Dasbor", "Transaksi", "Analitik"];
 
 const DEMO_TRANSACTIONS = [
-  { id: 1, desc: "Kopi Starbucks", category: "Makanan", amount: -65000, type: "expense", time: "09:14" },
-  { id: 2, desc: "Gaji Bulan Ini", category: "Income", amount: 12500000, type: "income", time: "08:00" },
-  { id: 3, desc: "Grab ke Kantor", category: "Transportasi", amount: -32000, type: "expense", time: "07:45" },
-  { id: 4, desc: "Netflix", category: "Hiburan", amount: -54000, type: "expense", time: "Kemarin" },
-  { id: 5, desc: "Freelance Design", category: "Income", amount: 3200000, type: "income", time: "Kemarin" },
+  {
+    id: 1,
+    desc: "Kopi Starbucks",
+    category: "Makanan",
+    amount: -65000,
+    type: "expense",
+    time: "09:14",
+  },
+  {
+    id: 2,
+    desc: "Gaji Bulan Ini",
+    category: "Pemasukan",
+    amount: 12500000,
+    type: "income",
+    time: "08:00",
+  },
+  {
+    id: 3,
+    desc: "Grab ke Kantor",
+    category: "Transportasi",
+    amount: -32000,
+    type: "expense",
+    time: "07:45",
+  },
+  {
+    id: 4,
+    desc: "Netflix",
+    category: "Hiburan",
+    amount: -54000,
+    type: "expense",
+    time: "Kemarin",
+  },
+  {
+    id: 5,
+    desc: "Freelance Design",
+    category: "Pemasukan",
+    amount: 3200000,
+    type: "income",
+    time: "Kemarin",
+  },
 ];
 
 const DEMO_WALLETS = [
-  { name: "BCA", balance: 8450000, color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  { name: "GoPay", balance: 1230000, color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  { name: "Cash", balance: 500000, color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+  {
+    name: "BCA",
+    balance: 8450000,
+    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  },
+  {
+    name: "GoPay",
+    balance: 1230000,
+    color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  },
+  {
+    name: "Tunai",
+    balance: 500000,
+    color: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  },
 ];
 
 const DEMO_CATEGORIES = [
@@ -581,16 +731,19 @@ const DEMO_CATEGORIES = [
   { name: "Lainnya", pct: 16, color: "#64748b" },
 ];
 
-function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+function DemoWidget() {
+  const [activeTab, setActiveTab] = useState("Dasbor");
   const [showAddModal, setShowAddModal] = useState(false);
   const [addedTx, setAddedTx] = useState<any[]>([]);
 
   const allTx = [...addedTx, ...DEMO_TRANSACTIONS];
-  const totalIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const totalExpense = Math.abs(allTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0));
+  const totalIncome = allTx
+    .filter((t) => t.type === "income")
+    .reduce((s, t) => s + t.amount, 0);
+  const totalExpense = Math.abs(
+    allTx.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0),
+  );
   const balance = 8450000 + 1230000 + 500000;
-
   const fmt = (n: number) => "Rp " + Math.abs(n).toLocaleString("id-ID");
 
   return (
@@ -608,93 +761,113 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
       </div>
 
       <div className="flex min-h-[520px]">
-        {/* Sidebar Mini */}
+        {/* Sidebar */}
         <div className="hidden md:flex w-48 flex-col bg-slate-950/50 border-r border-slate-800/50 p-4 gap-1">
-          <p className={`${spaceGrotesk} text-lg font-bold text-white px-3 mb-4`}>
+          <p className="font-space-grotesk text-lg font-bold text-white px-3 mb-4">
             FYNTRA<span className="text-blue-500">.</span>
           </p>
-          {DEMO_TABS.map(tab => (
+          {DEMO_TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all ${
-                activeTab === tab
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-500 hover:text-slate-300"
-              }`}
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all ${activeTab === tab ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-300"}`}
             >
               {tab}
             </button>
           ))}
         </div>
 
-        {/* Main Content */}
         <div className="flex-1 p-6 overflow-auto">
-          {/* Mobile Tab Bar */}
+          {/* Mobile tabs */}
           <div className="flex md:hidden gap-2 mb-6">
-            {DEMO_TABS.map(tab => (
+            {DEMO_TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  activeTab === tab ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"
-                }`}
+                className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === tab ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"}`}
               >
                 {tab}
               </button>
             ))}
           </div>
 
-          {/* DASHBOARD TAB */}
-          {activeTab === "Dashboard" && (
+          {activeTab === "Dasbor" && (
             <div className="space-y-4">
-              {/* Net Worth Header */}
               <div className="bg-slate-800/60 rounded-2xl p-6 border border-slate-700/30">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Liquid Cash</p>
-                <p className={`${spaceGrotesk} text-3xl font-bold text-white`}>{fmt(balance)}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
+                  Saldo Tunai
+                </p>
+                <p className="font-space-grotesk text-3xl font-bold text-white">
+                  {fmt(balance)}
+                </p>
                 <div className="flex gap-6 mt-4 pt-4 border-t border-slate-700/30">
                   <div>
-                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">Net Worth</p>
-                    <p className={`${spaceGrotesk} text-base font-bold text-emerald-400`}>{fmt(balance + 15000000)}</p>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">
+                      Total Aset
+                    </p>
+                    <p className="font-space-grotesk text-base font-bold text-emerald-400">
+                      {fmt(balance + 15000000)}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">Investment</p>
-                    <p className={`${spaceGrotesk} text-base font-bold text-white`}>{fmt(15000000)}</p>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">
+                      Investasi
+                    </p>
+                    <p className="font-space-grotesk text-base font-bold text-white">
+                      {fmt(15000000)}
+                    </p>
                   </div>
                 </div>
               </div>
-
-              {/* Wallet Pills */}
               <div className="flex gap-3 flex-wrap">
-                {DEMO_WALLETS.map(w => (
-                  <div key={w.name} className={`px-4 py-2.5 rounded-xl border text-[11px] font-bold ${w.color}`}>
+                {DEMO_WALLETS.map((w) => (
+                  <div
+                    key={w.name}
+                    className={`px-4 py-2.5 rounded-xl border text-[11px] font-bold ${w.color}`}
+                  >
                     {w.name} · {fmt(w.balance)}
                   </div>
                 ))}
               </div>
-
-              {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Income", val: fmt(totalIncome), color: "text-emerald-400" },
-                  { label: "Expense", val: fmt(totalExpense), color: "text-rose-400" },
-                  { label: "Cashflow", val: fmt(totalIncome - totalExpense), color: "text-blue-400" },
-                ].map(s => (
-                  <div key={s.label} className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
-                    <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">{s.label}</p>
-                    <p className={`${spaceGrotesk} text-sm font-bold ${s.color}`}>{s.val}</p>
+                  {
+                    label: "Pemasukan",
+                    val: fmt(totalIncome),
+                    color: "text-emerald-400",
+                  },
+                  {
+                    label: "Pengeluaran",
+                    val: fmt(totalExpense),
+                    color: "text-rose-400",
+                  },
+                  {
+                    label: "Arus Kas",
+                    val: fmt(totalIncome - totalExpense),
+                    color: "text-blue-400",
+                  },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30"
+                  >
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">
+                      {s.label}
+                    </p>
+                    <p
+                      className={`font-space-grotesk text-sm font-bold ${s.color}`}
+                    >
+                      {s.val}
+                    </p>
                   </div>
                 ))}
               </div>
-
-              {/* Add Transaction Button */}
               <button
                 onClick={() => setShowAddModal(true)}
                 className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95"
               >
-                + Add Transaction
+                + Tambah Transaksi
               </button>
-
               {addedTx.length > 0 && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-[11px] text-emerald-400 font-bold">
                   ✓ {addedTx.length} transaksi baru ditambahkan!
@@ -703,44 +876,54 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
             </div>
           )}
 
-          {/* TRANSACTIONS TAB */}
-          {activeTab === "Transactions" && (
+          {activeTab === "Transaksi" && (
             <div className="space-y-3">
               <div className="flex justify-between items-center mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent Activity</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Aktivitas Terkini
+                </p>
                 <button
                   onClick={() => setShowAddModal(true)}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all"
                 >
-                  + Add
+                  + Tambah
                 </button>
               </div>
               {allTx.map((t, i) => (
-                <div key={i} className="flex justify-between items-center p-4 bg-slate-800/30 rounded-xl border border-slate-700/20">
+                <div
+                  key={i}
+                  className="flex justify-between items-center p-4 bg-slate-800/30 rounded-xl border border-slate-700/20"
+                >
                   <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${
-                      t.type === "income" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
-                    }`}>
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center text-base ${t.type === "income" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"}`}
+                    >
                       {t.type === "income" ? "↓" : "↑"}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{t.desc}</p>
-                      <p className="text-[10px] text-slate-500 uppercase">{t.category} · {t.time}</p>
+                      <p className="text-[10px] text-slate-500 uppercase">
+                        {t.category} · {t.time}
+                      </p>
                     </div>
                   </div>
-                  <p className={`${spaceGrotesk} font-bold text-sm ${t.type === "income" ? "text-emerald-400" : "text-rose-400"}`}>
-                    {t.type === "income" ? "+" : "-"}{fmt(t.amount)}
+                  <p
+                    className={`font-space-grotesk font-bold text-sm ${t.type === "income" ? "text-emerald-400" : "text-rose-400"}`}
+                  >
+                    {t.type === "income" ? "+" : "-"}
+                    {fmt(t.amount)}
                   </p>
                 </div>
               ))}
             </div>
           )}
 
-          {/* ANALYTICS TAB */}
-          {activeTab === "Analytics" && (
+          {activeTab === "Analitik" && (
             <div className="space-y-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">Expense Breakdown</p>
-              {DEMO_CATEGORIES.map(c => (
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">
+                Rincian Pengeluaran
+              </p>
+              {DEMO_CATEGORIES.map((c) => (
                 <div key={c.name} className="space-y-2">
                   <div className="flex justify-between text-[11px] font-bold">
                     <span className="text-slate-300">{c.name}</span>
@@ -759,12 +942,18 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
               ))}
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Top Category</p>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">
+                    Kategori Terbesar
+                  </p>
                   <p className="text-sm font-bold text-white">Makanan</p>
                 </div>
                 <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Saving Rate</p>
-                  <p className={`${spaceGrotesk} text-sm font-bold text-emerald-400`}>73%</p>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">
+                    Tingkat Tabungan
+                  </p>
+                  <p className="font-space-grotesk text-sm font-bold text-emerald-400">
+                    73%
+                  </p>
                 </div>
               </div>
             </div>
@@ -772,7 +961,6 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
         </div>
       </div>
 
-      {/* Add Transaction Modal */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -787,9 +975,15 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm"
             >
-              <h3 className={`${spaceGrotesk} text-lg font-bold text-white mb-4`}>Add Transaction</h3>
+              <h3 className="font-space-grotesk text-lg font-bold text-white mb-4">
+                Tambah Transaksi
+              </h3>
               <DemoAddForm
-                onAdd={(tx) => { setAddedTx(prev => [tx, ...prev]); setShowAddModal(false); setActiveTab("Transactions"); }}
+                onAdd={(tx) => {
+                  setAddedTx((prev) => [tx, ...prev]);
+                  setShowAddModal(false);
+                  setActiveTab("Transaksi");
+                }}
                 onCancel={() => setShowAddModal(false)}
               />
             </motion.div>
@@ -800,72 +994,74 @@ function DemoWidget({ spaceGrotesk }: { spaceGrotesk: string }) {
   );
 }
 
-function DemoAddForm({ onAdd, onCancel }: { onAdd: (tx: any) => void; onCancel: () => void }) {
+function DemoAddForm({
+  onAdd,
+  onCancel,
+}: {
+  onAdd: (tx: any) => void;
+  onCancel: () => void;
+}) {
   const [type, setType] = useState<"expense" | "income">("expense");
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
 
-  const handleSubmit = () => {
-    if (!desc || !amount) return;
-    onAdd({
-      desc,
-      category: type === "income" ? "Income" : "Lainnya",
-      amount: type === "income" ? Number(amount) : -Number(amount),
-      type,
-      time: "Baru saja",
-    });
-  };
-
   return (
     <div className="space-y-3">
       <div className="flex p-1 bg-slate-800 rounded-xl">
-        {(["expense", "income"] as const).map(t => (
+        {(["expense", "income"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setType(t)}
-            className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${
-              type === t
-                ? t === "expense" ? "bg-rose-500 text-white" : "bg-emerald-500 text-white"
-                : "text-slate-500"
-            }`}
+            className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${type === t ? (t === "expense" ? "bg-rose-500 text-white" : "bg-emerald-500 text-white") : "text-slate-500"}`}
           >
-            {t}
+            {t === "expense" ? "Pengeluaran" : "Pemasukan"}
           </button>
         ))}
       </div>
       <input
         type="text"
-        placeholder="Deskripsi (e.g. Kopi Starbucks)"
+        placeholder="Deskripsi (cth: Kopi Starbucks)"
         value={desc}
-        onChange={e => setDesc(e.target.value)}
+        onChange={(e) => setDesc(e.target.value)}
         className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white outline-none font-medium placeholder:text-slate-600"
       />
       <input
         type="number"
         placeholder="Jumlah (Rp)"
         value={amount}
-        onChange={e => setAmount(e.target.value)}
+        onChange={(e) => setAmount(e.target.value)}
         className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white outline-none font-medium placeholder:text-slate-600"
       />
       <div className="flex gap-3 pt-1">
-        <button onClick={onCancel} className="flex-1 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors">
-          Cancel
+        <button
+          onClick={onCancel}
+          className="flex-1 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors"
+        >
+          Batal
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={() => {
+            if (!desc || !amount) return;
+            onAdd({
+              desc,
+              category: type === "income" ? "Pemasukan" : "Lainnya",
+              amount: type === "income" ? Number(amount) : -Number(amount),
+              type,
+              time: "Baru saja",
+            });
+          }}
           className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95"
         >
-          Save
+          Simpan
         </button>
       </div>
     </div>
   );
 }
 
-// --- KOMPONEN BANTUAN UNTUK FAQ (Smooth Accordion) ---
+// --- FAQ ACCORDION ---
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <div className="border border-slate-800/50 rounded-2xl bg-slate-900/30 overflow-hidden transition-colors hover:bg-slate-900/50">
       <button
@@ -876,7 +1072,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         <motion.span
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="text-slate-500 text-xl font-light"
+          className="text-slate-500 text-xl font-light flex-shrink-0 ml-4"
         >
           +
         </motion.span>
@@ -889,7 +1085,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <div className="px-6 pb-6 text-sm text-slate-500 leading-relaxed pt-0 border-t border-slate-800/30 mt-2 pt-4">
+            <div className="px-6 pb-6 text-sm text-slate-500 leading-relaxed border-t border-slate-800/30 pt-4">
               {answer}
             </div>
           </motion.div>

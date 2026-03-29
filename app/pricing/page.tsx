@@ -1,34 +1,92 @@
 "use client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useFyntra } from "@/context/FyntraContext"; // 💡 Pastikan path context benar
+import { supabase } from "@/lib/supabase"; // Untuk ambil email user saat ini
 
 export default function UpgradePage() {
   const [loading, setLoading] = useState(false);
+  const { fullName, refreshGlobalData, isPro } = useFyntra();
 
   const handlePayment = async () => {
+    if (isPro) {
+      toast.info("Anda sudah berada di paket Pro, Bos!");
+      return;
+    }
+
     setLoading(true);
     toast.info("Menyiapkan enkripsi pembayaran aman...");
 
-    // Integrasi Snap Midtrans (Sandbox/Production)
-    setTimeout(() => {
+    try {
+      // 1. Ambil data user dari Auth Supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast.error("Silakan login terlebih dahulu.");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Hit API Route kita untuk minta Snap Token
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          userEmail: user.email,
+          userName: fullName || "User Fyntra",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // 3. Panggil Jendela Pembayaran Midtrans Snap
+      // @ts-ignore
+      if (window.snap) {
+        // @ts-ignore
+        window.snap.pay(data.token, {
+          onSuccess: async (result: any) => {
+            toast.success("Pembayaran Berhasil! Mengaktifkan fitur Pro...");
+            await refreshGlobalData(); // Update status isPro di UI secara instan
+          },
+          onPending: (result: any) => {
+            toast.info("Menunggu pembayaran Anda...");
+            console.log("Pending:", result);
+          },
+          onError: (result: any) => {
+            toast.error("Pembayaran Gagal. Silakan coba lagi.");
+            console.error("Error:", result);
+          },
+          onClose: () => {
+            toast.warning("Anda menutup jendela pembayaran.");
+          },
+        });
+      } else {
+        toast.error("Gagal memuat sistem pembayaran. Refresh halaman ini.");
+      }
+    } catch (error: any) {
+      console.error("Payment Error:", error);
+      toast.error(error.message || "Terjadi kesalahan sistem.");
+    } finally {
       setLoading(false);
-      toast.error("Sistem pembayaran sedang dikonfigurasi.");
-    }, 2000);
+    }
   };
 
   return (
-    <div
-      className={`max-w-6xl mx-auto pb-24 px-6 lg:px-0 bg-transparent`}
-    >
+    <div className="max-w-6xl mx-auto pb-24 px-6 lg:px-0 bg-transparent">
       {/* --- HERO SECTION --- */}
       <header className="mb-20 text-center relative pt-10">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-600/10 blur-[100px] -z-10"></div>
         <span className="px-4 py-1.5 bg-blue-600/10 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4 inline-block border border-blue-600/20">
           Limited Launch Offer
         </span>
-        <h1
-          className={`font-space-grotesk text-4xl md:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white uppercase italic`}
-        >
+        <h1 className="font-space-grotesk text-4xl md:text-6xl font-bold tracking-tighter text-slate-900 dark:text-white uppercase italic">
           Master Your <span className="text-blue-600">Money.</span>
         </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium mt-6 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
@@ -42,9 +100,7 @@ export default function UpgradePage() {
         {/* STARTER - FREE */}
         <div className="bg-white dark:bg-slate-900/40 dark:backdrop-blur-3xl p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm flex flex-col transition-all">
           <div className="mb-10">
-            <h3
-              className={`font-space-grotesk text-2xl font-bold dark:text-white uppercase italic tracking-tight`}
-            >
+            <h3 className="font-space-grotesk text-2xl font-bold dark:text-white uppercase italic tracking-tight">
               Starter
             </h3>
             <div className="mt-4 flex items-baseline gap-1">
@@ -70,7 +126,7 @@ export default function UpgradePage() {
             disabled
             className="w-full py-5 bg-slate-50 dark:bg-slate-800/50 text-slate-400 rounded-[2rem] font-bold uppercase tracking-widest text-[10px] border border-slate-100 dark:border-slate-700"
           >
-            Paket Saat Ini
+            {isPro ? "Paket Dasar" : "Paket Saat Ini"}
           </button>
         </div>
 
@@ -81,9 +137,7 @@ export default function UpgradePage() {
           </div>
 
           <div className="mb-10">
-            <h3
-              className={`font-space-grotesk text-2xl font-bold text-white uppercase italic tracking-tight`}
-            >
+            <h3 className="font-space-grotesk text-2xl font-bold text-white uppercase italic tracking-tight">
               Pro
             </h3>
             <div className="mt-4 flex flex-col gap-1">
@@ -117,10 +171,14 @@ export default function UpgradePage() {
 
           <button
             onClick={handlePayment}
-            disabled={loading}
-            className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-[2rem] font-bold uppercase tracking-widest text-[10px] shadow-xl shadow-blue-900/40 active:scale-95"
+            disabled={loading || isPro}
+            className={`w-full py-5 ${isPro ? "bg-emerald-600 cursor-default" : "bg-blue-600 hover:bg-blue-500"} text-white rounded-[2rem] font-bold uppercase tracking-widest text-[10px] shadow-xl shadow-blue-900/40 active:scale-95 transition-all`}
           >
-            {loading ? "Processing..." : "Berlangganan Sekarang"}
+            {loading
+              ? "Processing..."
+              : isPro
+                ? "Status PRO Aktif"
+                : "Berlangganan Sekarang"}
           </button>
           <p className="text-center text-[9px] text-slate-500 mt-4 font-bold uppercase tracking-widest">
             Pembayaran diproses melalui Midtrans.
@@ -128,7 +186,7 @@ export default function UpgradePage() {
         </div>
       </div>
 
-      {/* --- PAYMENT LOGOS --- */}
+      {/* --- PAYMENT LOGOS, DETAIL PRODUK, & FAQ TETAP SAMA --- */}
       <section className="text-center mb-20 p-8 border border-slate-100 dark:border-slate-800/50 rounded-[3rem]">
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-8 text-center">
           Metode Pembayaran Aman
@@ -152,12 +210,9 @@ export default function UpgradePage() {
         </div>
       </section>
 
-      {/* --- DETAIL PRODUK --- */}
       <section className="grid md:grid-cols-2 gap-12 mb-20 bg-white dark:bg-slate-900/20 p-12 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 leading-relaxed transition-all">
         <div>
-          <h4
-            className={`font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic`}
-          >
+          <h4 className="font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic">
             Kenapa Fyntra Pro?
           </h4>
           <div className="space-y-6 text-slate-500 dark:text-slate-400 text-xs font-medium">
@@ -180,9 +235,7 @@ export default function UpgradePage() {
           </div>
         </div>
         <div>
-          <h4
-            className={`font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic`}
-          >
+          <h4 className="font-space-grotesk text-xl font-bold dark:text-white uppercase mb-6 italic">
             Pertanyaan Umum
           </h4>
           <div className="space-y-4 text-xs font-medium">
@@ -208,29 +261,39 @@ export default function UpgradePage() {
         </div>
       </section>
 
-      {/* --- FOOTER LEGAL & CONTACT --- */}
       <footer className="text-center pt-16 border-t border-slate-100 dark:border-slate-800">
         <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-12">
-          <a href="/terms" className="hover:text-blue-500">
+          <a href="/terms" className="hover:text-blue-500 transition">
             Syarat & Ketentuan
           </a>
-          <a href="/privacy" className="hover:text-blue-500">
+          <a href="/privacy" className="hover:text-blue-500 transition">
             Kebijakan Privasi
           </a>
-          <a href="/refund" className="hover:text-blue-500">
+          <a href="/refund" className="hover:text-blue-500 transition">
             Kebijakan Pengembalian Dana
           </a>
         </div>
-
         <div className="inline-block p-10 bg-slate-50 dark:bg-slate-900/40 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] font-medium min-w-[300px]">
           <p className="font-black text-slate-900 dark:text-white mb-4 uppercase tracking-[0.3em]">
             Kontak Bisnis:
           </p>
           <p className="flex items-center justify-center gap-2 mb-1">
-            WhatsApp: <a href="https://wa.me/6282117132290" className="text-blue-500 hover:text-blue-400 transition">+62 821-1713-2290</a>
+            WhatsApp:{" "}
+            <a
+              href="https://wa.me/6282117132290"
+              className="text-blue-500 hover:text-blue-400 transition"
+            >
+              +62 821-1713-2290
+            </a>
           </p>
           <p className="flex items-center justify-center gap-2">
-            Email: <a href="mailto:faizax.app@gmail.com" className="text-blue-500 hover:text-blue-400 transition">faizax.app@gmail.com</a>
+            Email:{" "}
+            <a
+              href="mailto:faizax.app@gmail.com"
+              className="text-blue-500 hover:text-blue-400 transition"
+            >
+              faizax.app@gmail.com
+            </a>
           </p>
           <p className="mt-8 opacity-40 font-bold uppercase tracking-[0.2em]">
             Fyntra Financial by Faizax Ecosystem &copy; 2026
@@ -241,6 +304,7 @@ export default function UpgradePage() {
   );
 }
 
+// Komponen FeatureItem tetap sama seperti sebelumnya
 function FeatureItem({
   text,
   active,
