@@ -3,19 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
-// FONT PREMIUM: Inter & Space Grotesk
-import { Inter, Space_Grotesk } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "900"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
 const MENU_ITEMS = [
   {
     id: "home",
@@ -190,12 +177,12 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${inter.className} hidden md:flex flex-col w-72 bg-white dark:bg-[#020617] text-slate-900 dark:text-white border-r border-slate-100 dark:border-slate-800/50 h-screen sticky top-0 p-8 transition-all duration-300 z-50`}
+      className={`hidden md:flex flex-col w-72 bg-white dark:bg-[#020617] text-slate-900 dark:text-white border-r border-slate-100 dark:border-slate-800/50 h-screen sticky top-0 p-8 transition-all duration-300 z-50`}
     >
       {/* LOGO AREA */}
       <div className="mb-12 px-4">
         <h1
-          className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white`}
+          className={`font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white`}
         >
           FYNTRA<span className="text-blue-500">.</span>
         </h1>
@@ -205,7 +192,7 @@ export default function Sidebar() {
       </div>
 
       {/* NAV LINKS */}
-      <nav className="flex-1 space-y-2 relative">
+      <nav className="flex-1 space-y-2 relative overflow-y-auto min-h-0 custom-scrollbar">
         {MENU_ITEMS.map((item) => {
           const isActive = pathname === item.path;
           return (
