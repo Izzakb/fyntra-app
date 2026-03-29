@@ -24,16 +24,11 @@
   --card: #0f172a; /* Slate 900 */
 }
 
-/* 4. FONT UTILITIES */
-.font-inter { font-family: var(--font-inter), sans-serif; }
-.font-space-grotesk { font-family: var(--font-space-grotesk), sans-serif; }
-
-/* 5. SETTINGAN DASAR BODY */
+/* 4. SETTINGAN DASAR BODY */
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), sans-serif;
-  @apply transition-colors duration-300 antialiased;
+  @apply transition-colors duration-300 antialiased font-sans;
 }
 
 /* Biar card-card Bos otomatis dapet warna variabel ini */

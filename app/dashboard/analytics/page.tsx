@@ -8,6 +8,18 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+// FONT PREMIUM
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
 // Palette Warna Sultan untuk Cashflow
 const EXPENSE_COLORS = [
   "#ef4444", // Rose
@@ -90,7 +102,7 @@ const CustomTooltip = ({ active, payload }: any) => {
           {data.name}
         </p>
         <p
-          className={`font-space-grotesk text-xl font-bold text-slate-900 dark:text-white tracking-tight`}
+          className={`${spaceGrotesk.className} text-xl font-bold text-slate-900 dark:text-white tracking-tight`}
         >
           <FormattedMoney amount={data.value} />
         </p>
@@ -257,13 +269,13 @@ export default function AnalyticsPage() {
 
   return (
     <div
-      className={`animate-in fade-in duration-700 pb-20 bg-transparent transition-all space-y-12`}
+      className={`${inter.className} animate-in fade-in duration-700 pb-20 bg-transparent transition-all space-y-12`}
     >
       {/* HEADER & EXPORT */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-4">
         <div>
           <h2
-            className={`font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
+            className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
           >
             Analytics & Reports
           </h2>
@@ -448,7 +460,7 @@ export default function AnalyticsPage() {
                       </p>
                     </div>
                     <p
-                      className={`font-space-grotesk font-bold text-sm text-slate-900 dark:text-white pl-6`}
+                      className={`${spaceGrotesk.className} font-bold text-sm text-slate-900 dark:text-white pl-6`}
                     >
                       <FormattedMoney amount={item.value} />
                     </p>
@@ -585,7 +597,7 @@ export default function AnalyticsPage() {
                         </p>
                       </div>
                       <p
-                        className={`font-space-grotesk font-bold text-sm text-slate-900 dark:text-white`}
+                        className={`${spaceGrotesk.className} font-bold text-sm text-slate-900 dark:text-white`}
                       >
                         <FormattedMoney amount={cat.value} />
                       </p>

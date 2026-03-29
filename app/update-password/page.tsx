@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 
+// FONT PREMIUM: Inter & Space Grotesk
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
 // --- SMOOTH & SIMPLE CONFIG ---
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -86,7 +99,7 @@ export default function UpdatePasswordPage() {
 
   return (
     <div
-      className={`min-h-screen bg-[#020617] flex items-center justify-center px-6 relative overflow-hidden`}
+      className={`${inter.className} min-h-screen bg-[#020617] flex items-center justify-center px-6 relative overflow-hidden`}
     >
       {/* BACKGROUND GLOW */}
       <motion.div
@@ -105,12 +118,12 @@ export default function UpdatePasswordPage() {
         <div className="text-center mb-8">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className={`font-space-grotesk w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-3xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg`}
+            className={`${spaceGrotesk.className} w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-3xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg`}
           >
             F
           </motion.div>
           <h1
-            className={`font-space-grotesk text-2xl font-bold tracking-tight text-white uppercase`}
+            className={`${spaceGrotesk.className} text-2xl font-bold tracking-tight text-white uppercase`}
           >
             Update <span className="text-blue-500">Security Key</span>
           </h1>

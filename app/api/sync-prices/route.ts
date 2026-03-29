@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// Kamus Pintar untuk mapping nama inputan Bos ke ID CoinGecko
 const ASSET_DICTIONARY: Record<string, string> = {
-  // Crypto
   btc: "bitcoin",
   bitcoin: "bitcoin",
   eth: "ethereum",
@@ -14,13 +13,31 @@ const ASSET_DICTIONARY: Record<string, string> = {
   solana: "solana",
   doge: "dogecoin",
   dogecoin: "dogecoin",
-  // Emas (Pakai PAX Gold sebagai patokan harga emas dunia)
   emas: "pax-gold",
   antam: "pax-gold",
   gold: "pax-gold",
 };
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  // AUTH CHECK
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { assets } = await req.json();
 
@@ -31,7 +48,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Filter cuma Crypto & Emas
     const syncableAssets = assets.filter(
       (a: any) => a.asset_type === "Crypto" || a.asset_type === "Emas",
     );
@@ -42,7 +58,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Kumpulkan ID untuk CoinGecko
     const coinIds = new Set<string>();
     syncableAssets.forEach((a: any) => {
       const nameKey = a.asset_name.toLowerCase();
@@ -53,19 +68,16 @@ export async function POST(req: Request) {
 
     if (coinIds.size === 0) {
       return NextResponse.json({
-        message:
-          "Nama koin/emas tidak dikenali sistem. Pakai singkatan umum (BTC, ETH, Emas).",
+        message: "Nama koin/emas tidak dikenali sistem. Pakai singkatan umum (BTC, ETH, Emas).",
       });
     }
 
-    // 3. Tembak API CoinGecko (Gratis, No API Key)
     const idsString = Array.from(coinIds).join(",");
     const res = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=${idsString}&vs_currencies=idr`,
     );
     const priceData = await res.json();
 
-    // 4. Siapkan data update
     const updatedPrices: any[] = [];
 
     syncableAssets.forEach((a: any) => {
@@ -75,7 +87,6 @@ export async function POST(req: Request) {
       if (coinId && priceData[coinId] && priceData[coinId].idr) {
         let newPrice = priceData[coinId].idr;
 
-        // KALKULASI KHUSUS EMAS: 1 Troy Ounce = 31.103 Gram
         if (a.asset_type === "Emas") {
           newPrice = Math.round(newPrice / 31.103);
         }

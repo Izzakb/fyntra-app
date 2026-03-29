@@ -1,10 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { createClient } from "@supabase/supabase-js";
 
-// Inisialisasi Gemini SDK
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // AUTH CHECK: Validasi user via Supabase session token
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { income, expense, balance, topCategory } = body;
@@ -33,10 +52,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("AI Error:", error);
     return NextResponse.json(
-      {
-        advice:
-          "Waduh Bos, sistem AI lagi istirahat bentar. Coba lagi nanti ya!",
-      },
+      { advice: "Waduh Bos, sistem AI lagi istirahat bentar. Coba lagi nanti ya!" },
       { status: 500 },
     );
   }

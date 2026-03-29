@@ -4,6 +4,18 @@ import { supabase } from "@/lib/supabase";
 import { useFyntra } from "@/context/FyntraContext";
 import { toast } from "sonner";
 
+// FONT PREMIUM
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
 // 💡 KOMPONEN FORMAT UANG ELITE (Desimal Dinamis)
 const FormattedMoney = ({
   amount,
@@ -119,13 +131,13 @@ export default function GoalsPage() {
 
   return (
     <div
-      className={`animate-in fade-in duration-700 pb-20 bg-transparent transition-all`}
+      className={`${inter.className} animate-in fade-in duration-700 pb-20 bg-transparent transition-all`}
     >
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h2
-            className={`font-space-grotesk text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
+            className={`${spaceGrotesk.className} text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase transition-colors duration-300`}
           >
             Future Goals
           </h2>
@@ -177,7 +189,7 @@ export default function GoalsPage() {
                 <div className="flex justify-between items-start mb-6 relative z-10">
                   <div>
                     <h3
-                      className={`font-space-grotesk text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight transition-colors`}
+                      className={`${spaceGrotesk.className} text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight transition-colors`}
                     >
                       {g.goal_name}
                     </h3>
@@ -233,7 +245,7 @@ export default function GoalsPage() {
                       Progress
                     </p>
                     <p
-                      className={`font-space-grotesk font-bold text-xl transition-colors ${isAchieved ? "text-emerald-500" : "text-blue-600 dark:text-blue-400"}`}
+                      className={`${spaceGrotesk.className} font-bold text-xl transition-colors ${isAchieved ? "text-emerald-500" : "text-blue-600 dark:text-blue-400"}`}
                     >
                       {progress}%
                     </p>
@@ -266,7 +278,7 @@ export default function GoalsPage() {
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-[#020617]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all">
           <div className="bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800/50 w-full max-w-md p-8 rounded-[3rem] shadow-2xl max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-colors relative">
             <h3
-              className={`font-space-grotesk text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
+              className={`${spaceGrotesk.className} text-xl font-bold mb-6 dark:text-white text-slate-900 uppercase`}
             >
               Set New Target
             </h3>

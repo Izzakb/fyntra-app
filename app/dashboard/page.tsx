@@ -550,11 +550,92 @@ export default function DashboardHomePage() {
 
   if (loadingGlobal)
     return (
-      <div
-        className={`p-10 font-bold italic text-slate-300 dark:text-slate-700`}
-      >
-        {" "}
-        Syncing Ledger...{" "}
+      <div className="space-y-10 pb-20 animate-pulse">
+        {/* Skeleton: Header Wealth */}
+        <div className="bg-slate-900/40 p-10 md:p-12 rounded-[3.5rem] border border-slate-800/50 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="space-y-3">
+              <div className="h-3 w-36 bg-slate-700/60 rounded-full" />
+              <div className="h-12 w-64 bg-slate-700/60 rounded-2xl" />
+            </div>
+            <div className="h-12 w-40 bg-slate-700/40 rounded-2xl" />
+          </div>
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-6">
+            <div className="space-y-2">
+              <div className="h-2.5 w-28 bg-slate-700/50 rounded-full" />
+              <div className="h-7 w-40 bg-slate-700/50 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-2.5 w-28 bg-slate-700/50 rounded-full" />
+              <div className="h-7 w-40 bg-slate-700/50 rounded-xl" />
+            </div>
+          </div>
+        </div>
+
+        {/* Skeleton: Wallet Cards */}
+        <div className="flex gap-4 overflow-hidden">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="min-w-[220px] bg-white dark:bg-slate-900/40 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800/50 space-y-4">
+              <div className="h-3 w-24 bg-slate-200 dark:bg-slate-700/60 rounded-full" />
+              <div className="h-7 w-32 bg-slate-200 dark:bg-slate-700/60 rounded-xl" />
+            </div>
+          ))}
+        </div>
+
+        {/* Skeleton: AI Advisor */}
+        <div className="bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-700/50 space-y-3">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-slate-700/60 rounded-full" />
+            <div className="h-3 w-32 bg-slate-700/60 rounded-full" />
+          </div>
+          <div className="h-3 w-3/4 bg-slate-700/40 rounded-full" />
+          <div className="h-3 w-full bg-slate-700/40 rounded-full" />
+          <div className="h-3 w-5/6 bg-slate-700/40 rounded-full" />
+        </div>
+
+        {/* Skeleton: Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white dark:bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 space-y-3">
+              <div className="h-2.5 w-24 bg-slate-200 dark:bg-slate-700/50 rounded-full" />
+              <div className="h-8 w-36 bg-slate-200 dark:bg-slate-700/50 rounded-xl" />
+            </div>
+          ))}
+        </div>
+
+        {/* Skeleton: Goals & Chart */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white dark:bg-slate-900/40 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 h-80 space-y-6">
+            <div className="h-3 w-24 bg-slate-200 dark:bg-slate-700/50 rounded-full" />
+            {[1, 2].map((i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-3 w-32 bg-slate-200 dark:bg-slate-700/40 rounded-full" />
+                <div className="h-3 w-full bg-slate-100 dark:bg-slate-800/50 rounded-full" />
+              </div>
+            ))}
+          </div>
+          <div className="bg-white dark:bg-slate-900/40 p-10 rounded-[3rem] border border-slate-100 dark:border-slate-800/50 h-80 flex items-end gap-6 justify-center pb-10">
+            <div className="w-12 h-40 bg-emerald-500/20 rounded-xl" />
+            <div className="w-12 h-24 bg-rose-500/20 rounded-xl" />
+          </div>
+        </div>
+
+        {/* Skeleton: Recent Activity */}
+        <div className="bg-white dark:bg-slate-900/40 p-10 rounded-[3.5rem] border border-slate-100 dark:border-slate-800/50 space-y-4">
+          <div className="h-3 w-32 bg-slate-200 dark:bg-slate-700/50 rounded-full mb-8" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex justify-between items-center p-5 bg-slate-50 dark:bg-slate-800/30 rounded-[2rem]">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700/50 rounded-2xl" />
+                <div className="space-y-2">
+                  <div className="h-3 w-32 bg-slate-200 dark:bg-slate-700/40 rounded-full" />
+                  <div className="h-2.5 w-20 bg-slate-100 dark:bg-slate-800 rounded-full" />
+                </div>
+              </div>
+              <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700/40 rounded-full" />
+            </div>
+          ))}
+        </div>
       </div>
     );
 

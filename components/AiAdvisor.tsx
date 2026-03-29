@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 interface AiAdvisorProps {
   income: number;
@@ -18,7 +19,6 @@ export default function AiAdvisor({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Jangan panggil AI kalau datanya belum siap/masih 0 semua di awal bulan
     if (income === 0 && expense === 0) {
       setAdvice("Belum ada transaksi bulan ini Bos. Gas cari cuan dulu!");
       setLoading(false);
@@ -27,9 +27,21 @@ export default function AiAdvisor({
 
     const fetchAdvice = async () => {
       try {
+        // Ambil session token user yang sedang login
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+          setAdvice("Sesi login tidak ditemukan Bos. Coba login ulang ya!");
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch("/api/advisor", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+          },
           body: JSON.stringify({ income, expense, balance, topCategory }),
         });
         const data = await res.json();

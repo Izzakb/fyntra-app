@@ -1,16 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-// Alamat import sudah diperbaiki ke library resmi:
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(req: NextRequest) {
+  // AUTH CHECK: Validasi user via Supabase session token
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    // 1. Kunci Rahasia
-    const MY_SECRET_KEY = "AIzaSyB1jHafLaBgLRx4gUC7rDy2ryD93BltaKU";
-
-    // 2. Inisialisasi dengan Class yang benar
-    const genAI = new GoogleGenerativeAI(MY_SECRET_KEY);
-
-    // Gunakan gemini-1.5-flash (paling stabil untuk ekstraksi data)
+    // Pakai env variable, BUKAN hardcoded key
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const body = await req.json();
@@ -44,12 +58,10 @@ export async function POST(req: NextRequest) {
     `;
     promptParts.push(systemInstruction);
 
-    // 3. Jalankan AI
     const result = await model.generateContent(promptParts);
     const response = await result.response;
     const rawText = response.text();
 
-    // Parsing hasil
     const cleanJson = rawText
       .replace(/```json/g, "")
       .replace(/```/g, "")
@@ -60,10 +72,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Magic Error Detail:", error);
     return NextResponse.json(
-      {
-        error: "Gagal memproses input AI.",
-        message: error.message,
-      },
+      { error: "Gagal memproses input AI.", message: error.message },
       { status: 500 },
     );
   }

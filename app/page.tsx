@@ -8,6 +8,18 @@ import {
   AnimatePresence,
 } from "framer-motion";
 
+// FONT PREMIUM
+import { Inter, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+});
+
 // --- DATA FAQ ---
 const FAQS = [
   {
@@ -38,7 +50,7 @@ export default function FyntraLanding() {
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative`}
+      className={`${inter.className} min-h-screen bg-[#020617] text-white selection:bg-blue-900 selection:text-white overflow-hidden relative`}
     >
       {/* GLOWING BACKGROUND LAYERS (PARALLAX) */}
       <motion.div
@@ -57,13 +69,13 @@ export default function FyntraLanding() {
           <div className="flex items-center gap-4 group cursor-pointer">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 10 }}
-              className={`font-space-grotesk w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20`}
+              className={`${spaceGrotesk.className} w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/20`}
             >
               F
             </motion.div>
             <div>
               <span
-                className={`font-space-grotesk text-2xl font-bold tracking-tight uppercase block leading-none`}
+                className={`${spaceGrotesk.className} text-2xl font-bold tracking-tight uppercase block leading-none`}
               >
                 Fyntra<span className="text-blue-500">.</span>
               </span>
@@ -130,7 +142,7 @@ export default function FyntraLanding() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
-            className={`font-space-grotesk text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8`}
+            className={`${spaceGrotesk.className} text-6xl md:text-[5.5rem] font-bold tracking-tighter leading-[1] mb-8`}
           >
             Master your capital <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
@@ -172,7 +184,7 @@ export default function FyntraLanding() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
+              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
             >
               The Arsenal
             </h2>
@@ -200,7 +212,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
+                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
               >
                 AI Magic Ledger
               </h3>
@@ -227,7 +239,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
+                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
               >
                 Bank-Grade Vault
               </h3>
@@ -255,7 +267,7 @@ export default function FyntraLanding() {
                 </svg>
               </div>
               <h3
-                className={`font-space-grotesk text-xl font-bold mb-4 uppercase`}
+                className={`${spaceGrotesk.className} text-xl font-bold mb-4 uppercase`}
               >
                 Global Portfolio
               </h3>
@@ -276,7 +288,7 @@ export default function FyntraLanding() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
+              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
             >
               Capital Access
             </h2>
@@ -380,7 +392,7 @@ export default function FyntraLanding() {
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2
-              className={`font-space-grotesk text-4xl font-bold tracking-tight uppercase`}
+              className={`${spaceGrotesk.className} text-4xl font-bold tracking-tight uppercase`}
             >
               Clear Answers
             </h2>
@@ -408,7 +420,7 @@ export default function FyntraLanding() {
                   F
                 </div>
                 <span
-                  className={`font-space-grotesk text-xl font-bold tracking-tight uppercase`}
+                  className={`${spaceGrotesk.className} text-xl font-bold tracking-tight uppercase`}
                 >
                   Fyntra.
                 </span>
