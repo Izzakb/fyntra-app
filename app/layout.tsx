@@ -1,11 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { FyntraProvider } from "@/context/FyntraContext"; // 💡 IMPORT PROVIDER KAMU
 import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "900"],
+  variable: "--font-inter",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-space-grotesk",
+});
 
 export const viewport: Viewport = {
   themeColor: "#0f172a",
@@ -16,8 +25,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Fyntra | Smart Finance by Faizax",
-  description: "Intelligence-driven wealth management by Faizax Ecosystem.",
+  title: "Fyntra | Manajemen Keuangan Cerdas by Faizax",
+  description: "Platform manajemen keuangan berbasis AI untuk investor modern Indonesia.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico?v=fyntra1",
@@ -31,23 +40,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body
-        className={`${inter.className} antialiased transition-colors duration-300`}
+        className={`${inter.variable} ${spaceGrotesk.variable} font-inter antialiased transition-colors duration-300`}
       >
         <Script
           src="https://app.sandbox.midtrans.com/snap/snap.js"
           data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
           strategy="beforeInteractive"
         />
-
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
         >
-          {/* 💡 BUNGKUS CHILDREN DENGAN PROVIDER DI SINI */}
-          <FyntraProvider>{children}</FyntraProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>
