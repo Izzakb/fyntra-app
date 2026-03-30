@@ -59,8 +59,8 @@ export default function RootLayout({
           {midtransKey && (
             <Script
               src="https://app.sandbox.midtrans.com/snap/snap.js"
-              data-client-key={midtransKey}
-              strategy="afterInteractive"
+              data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+              strategy="beforeInteractive" // Ganti dari afterInteractive
             />
           )}
         </ThemeProvider>
