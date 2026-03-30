@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export default function UpgradePage() {
   const [loading, setLoading] = useState(false);
   const [isPro, setIsPro] = useState(false);
