@@ -1,54 +1,60 @@
 import Midtrans from "midtrans-client";
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(req: Request) {
   try {
-    // 🔍 Debug env
-    console.log(
-      "MIDTRANS_SERVER_KEY:",
-      process.env.MIDTRANS_SERVER_KEY ? "ADA" : "KOSONG",
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const { userEmail, userName } = await req.json();
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Missing Env Vars");
+      return NextResponse.json(
+        { error: "Server Configuration Error" },
+        { status: 500 },
+      );
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+    const body = await req.json();
+    const { userId, userEmail, userName } = body;
 
     const orderId = `FYNTRA-${Date.now()}`;
 
-    // 🔥 Init Midtrans (cukup serverKey)
+    // 1. Simpan ke Supabase
+    const { error: dbError } = await supabaseAdmin
+      .from("fyntra_subscriptions")
+      .insert([
+        {
+          user_id: userId,
+          midtrans_order_id: orderId,
+          status: "pending",
+          plan_type: "pro",
+        },
+      ]);
+
+    if (dbError) {
+      console.error("Database Error:", dbError.message);
+      return NextResponse.json({ error: dbError.message }, { status: 500 });
+    }
+
+    // 2. Inisialisasi Midtrans
     const snap = new Midtrans.Snap({
       isProduction: false,
       serverKey: process.env.MIDTRANS_SERVER_KEY,
-      clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
     });
 
     const parameter = {
-      transaction_details: {
-        order_id: orderId,
-        gross_amount: 19000,
-      },
-      customer_details: {
-        first_name: userName || "User",
-        email: userEmail || "faizax.app@gmail.com",
-      },
-      // 🔥 sementara jangan terlalu banyak metode
-      enabled_payments: ["qris", "bank_transfer", "gopay"],
+      transaction_details: { order_id: orderId, gross_amount: 19000 },
+      customer_details: { first_name: userName, email: userEmail },
     };
-
-    console.log("PARAMETER:", parameter);
 
     const transaction = await snap.createTransaction(parameter);
 
-    return NextResponse.json({
-      token: transaction.token,
-      orderId,
-    });
+    // 3. RETURN WAJIB
+    return NextResponse.json({ token: transaction.token, orderId });
   } catch (error: any) {
-    console.error("MIDTRANS ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error: error?.message || "Gagal membuat transaksi",
-      },
-      { status: 500 },
-    );
+    console.error("Catch Error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
