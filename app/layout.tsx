@@ -26,7 +26,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Fyntra | Manajemen Keuangan Cerdas by Faizax",
-  description: "Platform manajemen keuangan berbasis AI untuk investor modern Indonesia.",
+  description:
+    "Platform manajemen keuangan berbasis AI untuk investor modern Indonesia.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico?v=fyntra1",
@@ -39,22 +40,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Simpan key di dalam variabel agar lebih aman saat pengecekan rendering
+  const midtransKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+
   return (
     <html lang="id" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-inter antialiased transition-colors duration-300`}
       >
-        <Script
-          src="https://app.sandbox.midtrans.com/snap/snap.js"
-          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-          strategy="beforeInteractive"
-        />
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
         >
           {children}
+
+          {/* 🔥 Script diletakkan di dalam ThemeProvider dan dicek ketersediaan key-nya */}
+          {midtransKey && (
+            <Script
+              src="https://app.sandbox.midtrans.com/snap/snap.js"
+              data-client-key={midtransKey}
+              strategy="afterInteractive"
+            />
+          )}
         </ThemeProvider>
       </body>
     </html>
