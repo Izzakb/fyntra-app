@@ -40,29 +40,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Simpan key di dalam variabel agar lebih aman saat pengecekan rendering
-  const midtransKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-
   return (
     <html lang="id" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-inter antialiased transition-colors duration-300`}
       >
+        {/*
+          ✅ FIX: Script Midtrans Snap harus langsung di dalam <body>,
+          BUKAN di dalam ThemeProvider atau komponen client lainnya.
+          strategy="afterInteractive" adalah yang benar untuk Snap popup.
+        */}
+        <Script
+          src="https://app.sandbox.midtrans.com/snap/snap.js"
+          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+          strategy="afterInteractive"
+        />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={true}
         >
           {children}
-
-          {/* 🔥 Script diletakkan di dalam ThemeProvider dan dicek ketersediaan key-nya */}
-          {midtransKey && (
-            <Script
-              src="https://app.sandbox.midtrans.com/snap/snap.js"
-              data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-              strategy="beforeInteractive" // Ganti dari afterInteractive
-            />
-          )}
         </ThemeProvider>
       </body>
     </html>
