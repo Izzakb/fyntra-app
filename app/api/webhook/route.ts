@@ -2,17 +2,17 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-// Gunakan Service Role Key agar bisa update data tanpa terhalang RLS
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
 export async function POST(req: Request) {
+  // Inisialisasi di DALAM fungsi agar env variable sudah tersedia
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
   try {
     const body = await req.json();
 
-    // Verifikasi Signature Midtrans (Keamanan)
+    // Verifikasi Signature Midtrans
     const signature = crypto
       .createHash("sha512")
       .update(
@@ -30,12 +30,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Logika update status jika pembayaran berhasil
     if (
       body.transaction_status === "settlement" ||
       body.transaction_status === "capture"
     ) {
-      // Ambil user_id berdasarkan order_id dari tabel transaksi kamu
       const { data: subscription } = await supabaseAdmin
         .from("fyntra_subscriptions")
         .select("user_id")
